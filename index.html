@@ -8,27 +8,24 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: kidney illustration fixed full-bleed behind everything. Hero text sits left over a maroon veil.
-   Each chapter is a scrollytelling block: a sticky paper "plate" holds the figure, narration sits under it,
-   and empty spacer steps drive the figure through its beats with GSAP ScrollTrigger. */
 :root {
   --ground: #2A0A0E;
   --veil: 42, 10, 14;
-  --ink: #F3E7DD;          /* bone, text on maroon */
+  --ink: #F3E7DD;
   --ink-2: #D2B7AB;
   --line: rgba(243, 231, 221, 0.18);
-  --amber: #E3BE6A;        /* urine amber from the ureters, accent on maroon */
-  /* plate (printed figure) */
+  --amber: #E3BE6A;
   --paper: #F2EEE4;
   --p-ink: #1B2126;
   --p-ink-2: #3A4249;
   --p-muted: #6F695E;
-  --oxblood: #A3302A;      /* accent inside plates only */
+  --oxblood: #A3302A;
   --serif: "Newsreader", "Iowan Old Style", Georgia, serif;
   --sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
   color-scheme: dark;
 }
+
 html { scroll-behavior: auto; }
 @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
 html, body { min-height: 100%; }
@@ -44,13 +41,22 @@ body {
 a { color: inherit; }
 :focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
 
-/* Background */
-.latar { position: fixed; inset: 0; z-index: 0; background: url("latar-ginjal.jpg") 72% center / cover no-repeat, var(--ground); }
+/* Background - Terisolasi pada GPU Layer */
+.latar {
+  position: fixed; inset: 0; z-index: 0;
+  background: url("latar-ginjal.jpg") 72% center / cover no-repeat, var(--ground);
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
 .latar::after {
   content: ""; position: absolute; inset: 0;
   background: linear-gradient(90deg, rgba(var(--veil), .94) 0%, rgba(var(--veil), .82) 34%, rgba(var(--veil), .25) 58%, rgba(var(--veil), 0) 72%);
 }
-.tirai { position: fixed; inset: 0; z-index: 0; background: rgb(var(--veil)); opacity: 0; pointer-events: none; }
+.tirai {
+  position: fixed; inset: 0; z-index: 0;
+  background: rgb(var(--veil)); opacity: 0; pointer-events: none;
+  transform: translateZ(0);
+}
 
 .wrap { position: relative; z-index: 1; padding-inline: clamp(16px, 5vw, 80px); max-width: 1400px; margin: 0 auto; }
 
@@ -80,7 +86,6 @@ h1 em, h2 em { font-style: italic; font-weight: 400; color: var(--amber); }
 .isi .no { font-family: var(--serif); font-style: italic; font-size: 1.1rem; color: var(--amber); font-variant-numeric: tabular-nums; }
 .isi .judul { font-weight: 500; min-width: 0; }
 
-/* Chapters */
 .bab-kepala { padding-block: 7vh 1.5vh; display: grid; gap: .9rem; max-width: 44rem; }
 .bab-kepala h2 { font-size: clamp(2rem, 4.4vw, 3.4rem); line-height: 1.06; }
 .bab-kepala p { margin: 0; color: var(--ink-2); font-size: 1.08rem; max-width: 38rem; }
@@ -89,18 +94,20 @@ h1 em, h2 em { font-style: italic; font-weight: 400; color: var(--amber); }
   position: sticky; top: clamp(8px, 3vh, 32px);
   display: flex; flex-direction: column; gap: clamp(10px, 2vh, 22px);
   padding-block: clamp(10px, 3vh, 28px);
+  transform: translateZ(0);
 }
 .plate {
   margin: 0; background: var(--paper); color: var(--p-ink); border-radius: 6px;
   padding: clamp(12px, 2vw, 26px) clamp(12px, 2vw, 26px) clamp(10px, 1.4vw, 16px);
-  box-shadow: 0 30px 80px rgba(10, 2, 4, .5);
+  box-shadow: 0 20px 50px rgba(10, 2, 4, .45);
   display: grid; gap: .6rem; min-width: 0;
+  contain: layout paint;
 }
 .plate figcaption { font-size: .82rem; color: var(--p-muted); line-height: 1.4; }
 .plate figcaption b { color: var(--p-ink); font-weight: 600; }
 .dg-scroll { overflow-x: auto; overflow-y: hidden; scrollbar-width: thin; padding-top: 30px; margin-top: -30px; }
 .dg-sizer { position: relative; margin-inline: auto; }
-.dg-inner { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+.dg-inner { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform; }
 .dg-svg { position: absolute; left: 0; top: 0; overflow: visible; }
 
 .n { position: absolute; }
@@ -110,19 +117,21 @@ h1 em, h2 em { font-style: italic; font-weight: 400; color: var(--amber); }
   padding: 10px 22px; background: var(--fill, #F8F5EE);
   border: 1.75px solid var(--p-ink-2); border-radius: 4px;
   font: 500 var(--fs, 26px)/1.24 var(--sans); color: var(--p-ink);
-  transition: opacity .35s, filter .35s, border-color .25s, box-shadow .25s;
+  transition: opacity .3s, border-color .2s, box-shadow .2s;
 }
 .box.dashed { border-style: dashed; }
 .box.group { align-items: flex-start; padding: 14px 20px; }
 .box.left { justify-content: flex-start; text-align: left; }
 .box.diamond { background: none; border: 0; padding: 0; }
 .box.diamond svg { position: absolute; inset: 0; overflow: visible; }
-.box.diamond polygon { fill: var(--fill, #E9D29B); stroke: var(--p-ink-2); stroke-width: 1.75; transition: stroke .25s, stroke-width .25s; }
+.box.diamond polygon { fill: var(--fill, #E9D29B); stroke: var(--p-ink-2); stroke-width: 1.75; transition: stroke .2s, stroke-width .2s; }
 .box.diamond .t { position: relative; width: 60%; }
-.box.on { border-color: var(--oxblood); border-width: 3px; box-shadow: inset 7px 0 0 var(--oxblood), 0 10px 26px rgba(80, 20, 14, .14); }
+.box.on { border-color: var(--oxblood); border-width: 3px; box-shadow: inset 7px 0 0 var(--oxblood); }
 .box.diamond.on { box-shadow: none; }
 .box.diamond.on polygon { stroke: var(--oxblood); stroke-width: 3; }
-.fokus .box:not(.on) { opacity: .42; filter: saturate(.35); }
+
+/* Mengganti filter: saturate dengan opacity murni untuk performa */
+.fokus .box:not(.on) { opacity: .28; }
 .badge {
   position: absolute; left: -1.75px; top: -27px; height: 26px; padding: 0 9px;
   background: var(--p-ink); color: var(--paper); font: 500 17px/26px var(--mono); letter-spacing: .05em;
@@ -135,37 +144,37 @@ h1 em, h2 em { font-style: italic; font-weight: 400; color: var(--amber); }
 .bullets div { display: grid; grid-template-columns: 8px 1fr; gap: 12px; }
 .bullets div::before { content: ""; width: 8px; height: 8px; margin-top: .5em; background: var(--oxblood); }
 
-.e path { fill: none; stroke: var(--p-ink-2); stroke-width: 2; stroke-linejoin: miter; transition: stroke .25s, opacity .35s; }
-.e polygon { fill: var(--p-ink-2); transition: fill .25s; }
+.e path { fill: none; stroke: var(--p-ink-2); stroke-width: 2; stroke-linejoin: miter; transition: stroke .2s, opacity .3s; }
+.e polygon { fill: var(--p-ink-2); transition: fill .2s; }
 .e text { font: 500 20px var(--mono); letter-spacing: .12em; fill: var(--p-ink-2); }
 .e.on path { stroke: var(--oxblood); stroke-width: 2.75; }
 .e.on polygon { fill: var(--oxblood); }
-.fokus .e:not(.on) { opacity: .42; }
-.chevron { fill: #E8E2D5; stroke: var(--p-ink-2); stroke-width: 1.5; transition: fill .25s, opacity .35s; }
+.fokus .e:not(.on) { opacity: .28; }
+.chevron { fill: #E8E2D5; stroke: var(--p-ink-2); stroke-width: 1.5; transition: fill .2s, opacity .3s; }
 .chevron.on { fill: #F3DED8; }
-.fokus .chevron:not(.on) { opacity: .42; }
+.fokus .chevron:not(.on) { opacity: .28; }
 
 /* Pie plate */
 .pie-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: clamp(12px, 3vw, 40px); align-items: center; }
 .pie-svg { width: 100%; height: auto; max-height: 56vh; display: block; }
 .pie-svg text { font-family: var(--sans); }
 .angka { display: grid; }
-.angka > div { display: grid; grid-template-columns: minmax(7rem, auto) 1fr; gap: 1.25rem; align-items: baseline; padding-block: .9rem; border-top: 1.5px solid #CDC4B1; transition: opacity .35s, border-color .25s; }
-.angka strong { font: 500 clamp(2rem, 4.2vw, 3.6rem)/1 var(--serif); letter-spacing: -.03em; white-space: nowrap; transition: color .25s; }
+.angka > div { display: grid; grid-template-columns: minmax(7rem, auto) 1fr; gap: 1.25rem; align-items: baseline; padding-block: .9rem; border-top: 1.5px solid #CDC4B1; transition: opacity .3s, border-color .2s; }
+.angka strong { font: 500 clamp(2rem, 4.2vw, 3.6rem)/1 var(--serif); letter-spacing: -.03em; white-space: nowrap; transition: color .2s; }
 .angka strong.kecil { font-size: clamp(1.4rem, 2.4vw, 2.1rem); }
 .angka span { font-size: .95rem; color: var(--p-ink-2); }
 .angka .on { border-color: var(--p-ink); }
 .angka .on strong { color: var(--oxblood); }
-.angka .redup { opacity: .45; }
+.angka .redup { opacity: .35; }
 
 /* Narration under the plate */
 .narasi { display: grid; grid-template-columns: 4.5rem 1fr; gap: 1rem; align-items: start; max-width: 64rem; }
 .narasi .hit { font: 500 .85rem/2.1 var(--mono); color: var(--amber); letter-spacing: .06em; font-variant-numeric: tabular-nums; }
 .narasi p { margin: 0; font-family: var(--serif); font-size: clamp(1.1rem, 1.7vw, 1.45rem); line-height: 1.38; min-height: 4.2em; }
 .kemajuan { height: 2px; background: var(--line); }
-.kemajuan i { display: block; height: 100%; background: var(--amber); transform: scaleX(0); transform-origin: left; }
+.kemajuan i { display: block; height: 100%; background: var(--amber); transform: scaleX(0); transform-origin: left; will-change: transform; }
 
-/* Summary */
+/* Summary & Referensi */
 .ringkas { padding-block: 8vh 6vh; display: grid; gap: 2.5rem; max-width: 60rem; }
 .ringkas h2 { font-size: clamp(2.4rem, 5vw, 3.8rem); }
 .ringkas ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.6rem; }
@@ -190,11 +199,11 @@ h1 em, h2 em { font-style: italic; font-weight: 400; color: var(--amber); }
   .narasi p { min-height: 5.6em; }
 }
 @media (prefers-reduced-motion: no-preference) {
-  .kolom > * { animation: naik 700ms cubic-bezier(.16, 1, .3, 1) both; }
-  .kolom > *:nth-child(2) { animation-delay: 120ms; }
-  .kolom > *:nth-child(3) { animation-delay: 220ms; }
-  .kolom > *:nth-child(4) { animation-delay: 300ms; }
-  @keyframes naik { from { opacity: .001; transform: translateY(12px); } }
+  .kolom > * { animation: naik 500ms cubic-bezier(.16, 1, .3, 1) both; }
+  .kolom > *:nth-child(2) { animation-delay: 80ms; }
+  .kolom > *:nth-child(3) { animation-delay: 160ms; }
+  .kolom > *:nth-child(4) { animation-delay: 240ms; }
+  @keyframes naik { from { opacity: 0; transform: translateY(10px); } }
 }
 </style>
 </head>
@@ -262,15 +271,13 @@ h1 em, h2 em { font-style: italic; font-weight: 400; color: var(--amber); }
 (() => {
 "use strict";
 const RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
-const D = RM ? 0 : 1; // duration multiplier
+const D = RM ? 0 : 1;
 const SVGNS = "http://www.w3.org/2000/svg";
 const h = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
 const s = (tag, attrs) => { const e = document.createElementNS(SVGNS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); return e; };
 const esc = (t) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;");
-// "↑ Teks" / "↓ Teks" -> colored arrow
 const fmt = (t) => esc(t).replace(/^([↑↓]) ?/, '<span class="arr">$1</span>');
 
-/* ---------- Content ---------- */
 const SAND = "#EADFCB", SAGE = "#DDE6D3", BLUE = "#DCE6EC", BLUEMID = "#C8D8E4", ROSE = "#EFD8D1", NEUTRAL = "#E8E2D5", CARD = "#F8F5EE";
 
 const BAB = [
@@ -432,7 +439,7 @@ const BAB = [
   },
 ];
 
-/* ---------- Flowchart builder ---------- */
+/* ---------- Flowchart Builder (Optimized) ---------- */
 function buildFlow(b, plate) {
   const scroll = h("div", "dg-scroll"), sizer = h("div", "dg-sizer"), inner = h("div", "dg-inner");
   inner.style.width = b.w + "px"; inner.style.height = b.h + "px";
@@ -487,21 +494,25 @@ function buildFlow(b, plate) {
   plate.prepend(scroll);
   const d = { b, plate, scroll, sizer, inner, nodes, edges, scale: 1 };
 
+  let rAfId = null;
   const fit = () => {
-    const W = scroll.clientWidth;
-    const maxH = Math.max(220, window.innerHeight - (innerWidth < 760 ? 330 : 290));
-    let sc = Math.min(W / b.w, maxH / b.h);
-    sc = Math.max(sc, innerWidth < 760 ? 0.5 : 0.42);
-    d.scale = sc;
-    inner.style.transform = `scale(${sc})`;
-    sizer.style.width = b.w * sc + "px"; sizer.style.height = b.h * sc + "px";
+    if (rAfId) cancelAnimationFrame(rAfId);
+    rAfId = requestAnimationFrame(() => {
+      const W = scroll.clientWidth;
+      const maxH = Math.max(220, window.innerHeight - (innerWidth < 760 ? 330 : 290));
+      let sc = Math.min(W / b.w, maxH / b.h);
+      sc = Math.max(sc, innerWidth < 760 ? 0.5 : 0.42);
+      d.scale = sc;
+      inner.style.transform = `scale(${sc})`;
+      sizer.style.width = (b.w * sc) + "px";
+      sizer.style.height = (b.h * sc) + "px";
+    });
   };
   fit();
   new ResizeObserver(fit).observe(scroll);
   return d;
 }
 
-// Scroll-scrubbed build: beat j occupies timeline time [j, j+1).
 function flowTimeline(d) {
   const tl = gsap.timeline({ paused: true, defaults: { ease: "power2.out" } });
   for (const nd of d.nodes) {
@@ -517,7 +528,6 @@ function flowTimeline(d) {
   return tl;
 }
 
-// Highlight for current beat
 function focusFlow(d, i) {
   const n = d.b.beats.length, focusOn = i >= 0 && i < n;
   d.plate.classList.toggle("fokus", focusOn);
@@ -532,7 +542,7 @@ function focusFlow(d, i) {
   }
 }
 
-/* ---------- Pie (chapter 1) ---------- */
+/* ---------- Pie Chart (Optimized) ---------- */
 function buildPie(b, plate) {
   const CX = 470, CY = 318, R = 262;
   const rad = (a) => a * Math.PI / 180;
@@ -597,30 +607,24 @@ function pieTimeline(p) {
   const tl = gsap.timeline({ paused: true, defaults: { ease: "power2.out" } });
   const row = (k) => p.rows[k];
 
-  // beat 0: ICF/ECF split 2:1
   tl.fromTo([e.icf, e.ecf], { autoAlpha: 0, scale: .82, svgOrigin: O }, { autoAlpha: 1, scale: 1, svgOrigin: O, duration: .4, stagger: .12 }, 0)
     .fromTo(e.arc, { autoAlpha: 0, strokeDashoffset: 1 }, { autoAlpha: 1, strokeDashoffset: 0, duration: .45, ease: "none" }, .2)
     .fromTo([e.arcLabel, e.lIcf], { autoAlpha: 0 }, { autoAlpha: 1, duration: .25 }, .5)
     .fromTo(row(0), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .3 }, .35)
-  // beat 1: ECF splits into three
     .to(e.ecf, { autoAlpha: 0, duration: .3 }, 1)
     .fromTo(e.split, { autoAlpha: 0 }, { autoAlpha: 1, duration: .3 }, 1)
     .fromTo(e.lSplit, { autoAlpha: 0 }, { autoAlpha: 1, duration: .3 }, 1.2)
     .fromTo(row(1), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .3 }, 1.1)
-  // beat 2: plasma pulled out, rest dimmed
     .to([e.pla, e.lPla], { x: p.pop[0], y: p.pop[1], duration: .4 }, 2)
     .to([e.icf, e.int, e.tra, e.lInt, e.lTra], { autoAlpha: .45, duration: .3 }, 2)
     .fromTo(row(2), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .3 }, 2.1)
-  // beat 3: sodium in the extracellular space
     .to([e.pla, e.lPla], { x: 0, y: 0, duration: .35 }, 3)
     .to([e.int, e.tra, e.lInt, e.lTra], { autoAlpha: 1, duration: .3 }, 3)
     .fromTo(e.ring, { autoAlpha: 0 }, { autoAlpha: 1, duration: .3 }, 3)
     .fromTo(e.na.children, { autoAlpha: 0, scale: .4, transformOrigin: "50% 50%" }, { autoAlpha: 1, scale: 1, transformOrigin: "50% 50%", duration: .3, stagger: .03, ease: "back.out(2)" }, 3.1)
     .fromTo(row(3), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .3 }, 3.1)
-  // beat 4: isotonic sodium-containing fluid
     .to(e.na.children, { autoAlpha: 0, scale: .4, duration: .25, stagger: .01 }, 4)
     .fromTo(row(4), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .3 }, 4.1)
-  // whole figure
     .to(e.ring, { autoAlpha: 0, duration: .3 }, n)
     .to(e.icf, { autoAlpha: 1, duration: .3 }, n);
   return tl;
@@ -635,8 +639,10 @@ function focusPie(p, i) {
   });
 }
 
-/* ---------- Chapter scaffolding + ScrollTriggers ---------- */
+/* ---------- Setup Scrollytelling & ScrollTrigger ---------- */
 gsap.registerPlugin(ScrollTrigger);
+gsap.ticker.lagSmoothing(1000, 16);
+
 const host = document.getElementById("bab");
 const HOLD = .6;
 const vhUnit = (window.CSS && CSS.supports("height", "100dvh")) ? "dvh" : "vh";
@@ -668,6 +674,8 @@ BAB.forEach((b) => {
   tl.to({}, { duration: dur - tl.duration() > 0 ? dur - tl.duration() : 0 });
 
   const hit = sec.querySelector(".hit"), text = sec.querySelector(".narasi p"), bar = sec.querySelector(".kemajuan i");
+  const setBarScale = gsap.quickSetter(bar, "scaleX");
+  
   let cur = -2;
   const show = (i) => {
     if (i === cur) return;
@@ -676,7 +684,7 @@ BAB.forEach((b) => {
     const msg = i < 0 ? b.beats[0] : i < total ? b.beats[i] : "Gambar lengkap. Gulir terus ke bagian berikutnya.";
     hit.textContent = i < total ? `${String(Math.max(i, 0) + 1).padStart(2, "0")} / ${String(total).padStart(2, "0")}` : "";
     text.textContent = msg;
-    gsap.fromTo(text, { autoAlpha: 0, y: 6 }, { autoAlpha: i < 0 ? .35 : 1, y: 0, duration: .35 * D, ease: "power2.out", overwrite: "auto" });
+    gsap.fromTo(text, { autoAlpha: 0, y: 6 }, { autoAlpha: i < 0 ? .35 : 1, y: 0, duration: .25 * D, ease: "power2.out", overwrite: "auto" });
   };
   show(-1);
 
@@ -686,16 +694,16 @@ BAB.forEach((b) => {
     start: () => `top ${stuckTop()}px`,
     end: () => `bottom ${stuckTop() + stage.offsetHeight}px`,
     animation: tl,
-    scrub: RM ? true : .5,
+    scrub: RM ? true : .3,
+    fastScrollEnd: true,
     onUpdate: (self) => {
-      bar.style.transform = `scaleX(${self.progress})`;
+      setBarScale(self.progress);
       const t = self.progress * dur;
       show(self.progress === 0 ? -1 : Math.min(Math.floor(t), total));
     },
   });
 });
 
-// Darken background illustration on hero exit
 gsap.to(".tirai", {
   opacity: .78, ease: "none",
   scrollTrigger: { trigger: ".hero", start: "bottom 85%", end: "bottom 15%", scrub: true },
