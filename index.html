@@ -58,12 +58,9 @@ a { color: inherit; }
 .hero { padding-block: clamp(40px, 9vh, 96px) 64px; }
 .kolom { max-width: 34rem; display: grid; gap: 2.25rem; }
 .kepala { display: grid; gap: 1.2rem; }
-.alis { font-size: .8rem; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); }
-.alis b { color: var(--amber); font-weight: 600; }
 h1, h2 { font-family: var(--serif); font-weight: 500; letter-spacing: -.02em; text-wrap: balance; margin: 0; }
 h1 { font-size: clamp(2.6rem, 6.2vw, 4.8rem); line-height: 1.04; padding-bottom: .05em; }
 h1 em, h2 em { font-style: italic; font-weight: 400; color: var(--amber); }
-.lead { margin: 0; font-family: var(--serif); font-style: italic; font-size: clamp(1.15rem, 1.8vw, 1.4rem); line-height: 1.45; color: var(--ink-2); max-width: 28rem; }
 .tombol {
   justify-self: start; display: inline-flex; align-items: center; gap: .6rem;
   padding: .75rem 1.25rem; border: 1px solid var(--amber); border-radius: 2px;
@@ -82,12 +79,6 @@ h1 em, h2 em { font-style: italic; font-weight: 400; color: var(--amber); }
 .isi a:hover { color: var(--amber); padding-left: .35rem; }
 .isi .no { font-family: var(--serif); font-style: italic; font-size: 1.1rem; color: var(--amber); font-variant-numeric: tabular-nums; }
 .isi .judul { font-weight: 500; min-width: 0; }
-
-/* Video */
-.video { padding-block: 12vh 4vh; display: grid; gap: 1.25rem; justify-items: start; }
-.video h2 { font-size: clamp(2rem, 4vw, 3rem); }
-.video p { margin: 0; color: var(--ink-2); max-width: 40rem; }
-.video video { width: 100%; max-width: 1100px; aspect-ratio: 16 / 9; height: auto; background: #140405; border-radius: 6px; box-shadow: 0 30px 80px rgba(10, 2, 4, .55); }
 
 /* Chapters */
 .bab-kepala { padding-block: 7vh 1.5vh; display: grid; gap: .9rem; max-width: 44rem; }
@@ -260,7 +251,7 @@ h1 em, h2 em { font-style: italic; font-weight: 400; color: var(--amber); }
       <li>Finfer S, Bellomo R, Boyce N, French J, Myburgh J, Norton R; SAFE Study Investigators. A comparison of albumin and saline for fluid resuscitation in the intensive care unit. N Engl J Med. 2004 May 27;350(22):2247-56. doi:<a href="https://doi.org/10.1056/NEJMoa040232">10.1056/NEJMoa040232</a></li>
       <li>Semler MW, Self WH, Wanderer JP, Ehrenfeld JM, Wang L, Byrne DW, et al. Balanced crystalloids versus saline in critically ill adults. N Engl J Med. 2018 Mar 1;378(9):829-39. doi:<a href="https://doi.org/10.1056/NEJMoa1711584">10.1056/NEJMoa1711584</a></li>
       <li>Myburgh JA, Mythen MG. Resuscitation fluids. N Engl J Med. 2013 Sep 26;369(13):1243-51. doi:<a href="https://doi.org/10.1056/NEJMra1208627">10.1056/NEJMra1208627</a></li>
-      <li>Djumaryo DH, Solin SC, Bahasoan Y. Patologi klinik 2: elektrolit dan analisis gas darah [unpublished lecture notes]. Modul Ginjal dan Cairan Tubuh. Jakarta: Fakultas Kedokteran Universitas Indonesia; lecture given 2027 Oct 7.</li>
+      <li>Djumaryo DH, Solin SC, Bahasoan Y. Patologi klinik 2: elektrolit dan analisis gas darah [unpublished lecture notes]. Modul Ginjal dan Cairan Tubuh. Jakarta: Fakultas Kedokteran Universitas Indonesia; lecture given 2026 Oct 7.</li>
     </ol>
   </section>
 </main>
@@ -279,7 +270,7 @@ const esc = (t) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;");
 // "↑ Teks" / "↓ Teks" -> colored arrow
 const fmt = (t) => esc(t).replace(/^([↑↓]) ?/, '<span class="arr">$1</span>');
 
-/* ---------- Content (ported from the Remotion v2 scenes) ---------- */
+/* ---------- Content ---------- */
 const SAND = "#EADFCB", SAGE = "#DDE6D3", BLUE = "#DCE6EC", BLUEMID = "#C8D8E4", ROSE = "#EFD8D1", NEUTRAL = "#E8E2D5", CARD = "#F8F5EE";
 
 const BAB = [
@@ -460,14 +451,14 @@ function buildFlow(b, plate) {
       d.append(s("polygon", { points: `${n.w / 2},0 ${n.w},${n.h / 2} ${n.w / 2},${n.h} 0,${n.h / 2}` }));
       box.append(d);
     }
-    let inner;
-    if (n.lines) inner = h("div", "t lines", n.lines.map((l) => `<div>${fmt(l)}</div>`).join(""));
-    else if (n.bullets) inner = h("div", "t bullets", n.bullets.map((l) => `<div>${esc(l)}</div>`).join(""));
-    else inner = h("div", "t", fmt(n.t));
-    box.append(inner);
+    let textEl;
+    if (n.lines) textEl = h("div", "t lines", n.lines.map((l) => `<div>${fmt(l)}</div>`).join(""));
+    else if (n.bullets) textEl = h("div", "t bullets", n.bullets.map((l) => `<div>${esc(l)}</div>`).join(""));
+    else textEl = h("div", "t", fmt(n.t));
+    box.append(textEl);
     if (n.badge) box.append(h("div", "badge", n.badge));
     el.append(box);
-    sizer.firstChild.append(el);
+    inner.append(el);
     return { el, box, step: n.step, o: n.o || 0, focus: n.focus || [n.step], cx: n.x + n.w / 2, shown: true };
   });
 
@@ -510,7 +501,7 @@ function buildFlow(b, plate) {
   return d;
 }
 
-// Scroll-scrubbed build: beat j occupies timeline time [j, j+1). Scrolling drives the playhead.
+// Scroll-scrubbed build: beat j occupies timeline time [j, j+1).
 function flowTimeline(d) {
   const tl = gsap.timeline({ paused: true, defaults: { ease: "power2.out" } });
   for (const nd of d.nodes) {
@@ -526,18 +517,18 @@ function flowTimeline(d) {
   return tl;
 }
 
-// Highlight for the current beat (i === total means "whole figure", nothing highlighted).
+// Highlight for current beat
 function focusFlow(d, i) {
   const n = d.b.beats.length, focusOn = i >= 0 && i < n;
   d.plate.classList.toggle("fokus", focusOn);
   for (const nd of d.nodes) nd.box.classList.toggle("on", focusOn && nd.focus.includes(i));
   for (const e of d.edges) (e.chevron || e.g).classList.toggle("on", focusOn && e.focus.includes(i));
-  // On narrow screens the figure scrolls sideways: bring the highlighted part into view.
+
   const W = d.scroll.clientWidth, full = d.b.w * d.scale;
   if (full > W + 4) {
     const xs = d.nodes.filter((nd) => focusOn && nd.focus.includes(i)).map((nd) => nd.cx);
     const target = xs.length ? (xs.reduce((a, b) => a + b, 0) / xs.length) * d.scale - W / 2 : 0;
-    d.scroll.scrollTo({ left: Math.max(0, target), behavior: RM ? "auto" : "smooth" });
+    d.scroll.scrollTo({ left: Math.max(0, target), behavior: "auto" });
   }
 }
 
@@ -553,7 +544,6 @@ function buildPie(b, plate) {
   const [tx0, ty0] = pt(152, R + 98), [tx1, ty1] = pt(38, R + 98);
   const lInt = pt(440, R * .58), lPla = pt(mid, R * .7), lTr = pt(512.6, R * .9);
 
-  // deterministic sodium particle positions
   let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
   const na = Array.from({ length: 14 }, (_, i) => {
     const a = INT[0] + 8 + rnd() * (PLA[1] - INT[0] - 16);
@@ -591,6 +581,7 @@ function buildPie(b, plate) {
   const grid = h("div", "pie-grid", svgMarkup);
   const angka = h("div", "angka", `
     <div data-step="0"><strong>2 : 1</strong><span>Perbandingan cairan intrasel dan ekstrasel dalam air tubuh total</span></div>
+    <div data-step="1"><strong>1/3</strong><span>cairan ekstrasel, terbagi menjadi cairan interstisial, plasma, dan transeluler</span></div>
     <div data-step="2"><strong>≈ 20%</strong><span>cairan ekstrasel berada di dalam plasma</span></div>
     <div data-step="3"><strong>90%</strong><span>aktivitas osmotik cairan ekstrasel berasal dari natrium</span></div>
     <div data-step="4"><strong class="kecil">RL / NaCl 0,9%</strong><span>kristaloid isotonik bernatrium</span></div>`);
@@ -605,28 +596,30 @@ function pieTimeline(p) {
   const e = p.el, O = p.origin, n = p.b.beats.length;
   const tl = gsap.timeline({ paused: true, defaults: { ease: "power2.out" } });
   const row = (k) => p.rows[k];
+
   // beat 0: ICF/ECF split 2:1
   tl.fromTo([e.icf, e.ecf], { autoAlpha: 0, scale: .82, svgOrigin: O }, { autoAlpha: 1, scale: 1, svgOrigin: O, duration: .4, stagger: .12 }, 0)
-    .fromTo(e.arc, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: .45, ease: "none" }, .2)
+    .fromTo(e.arc, { autoAlpha: 0, strokeDashoffset: 1 }, { autoAlpha: 1, strokeDashoffset: 0, duration: .45, ease: "none" }, .2)
     .fromTo([e.arcLabel, e.lIcf], { autoAlpha: 0 }, { autoAlpha: 1, duration: .25 }, .5)
     .fromTo(row(0), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .3 }, .35)
   // beat 1: ECF splits into three
     .to(e.ecf, { autoAlpha: 0, duration: .3 }, 1)
     .fromTo(e.split, { autoAlpha: 0 }, { autoAlpha: 1, duration: .3 }, 1)
     .fromTo(e.lSplit, { autoAlpha: 0 }, { autoAlpha: 1, duration: .3 }, 1.2)
+    .fromTo(row(1), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .3 }, 1.1)
   // beat 2: plasma pulled out, rest dimmed
     .to([e.pla, e.lPla], { x: p.pop[0], y: p.pop[1], duration: .4 }, 2)
     .to([e.icf, e.int, e.tra, e.lInt, e.lTra], { autoAlpha: .45, duration: .3 }, 2)
-    .fromTo(row(1), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .3 }, 2.1)
+    .fromTo(row(2), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .3 }, 2.1)
   // beat 3: sodium in the extracellular space
     .to([e.pla, e.lPla], { x: 0, y: 0, duration: .35 }, 3)
     .to([e.int, e.tra, e.lInt, e.lTra], { autoAlpha: 1, duration: .3 }, 3)
     .fromTo(e.ring, { autoAlpha: 0 }, { autoAlpha: 1, duration: .3 }, 3)
     .fromTo(e.na.children, { autoAlpha: 0, scale: .4, transformOrigin: "50% 50%" }, { autoAlpha: 1, scale: 1, transformOrigin: "50% 50%", duration: .3, stagger: .03, ease: "back.out(2)" }, 3.1)
-    .fromTo(row(2), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .3 }, 3.1)
+    .fromTo(row(3), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .3 }, 3.1)
   // beat 4: isotonic sodium-containing fluid
     .to(e.na.children, { autoAlpha: 0, scale: .4, duration: .25, stagger: .01 }, 4)
-    .fromTo(row(3), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .3 }, 4.1)
+    .fromTo(row(4), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .3 }, 4.1)
   // whole figure
     .to(e.ring, { autoAlpha: 0, duration: .3 }, n)
     .to(e.icf, { autoAlpha: 1, duration: .3 }, n);
@@ -645,7 +638,8 @@ function focusPie(p, i) {
 /* ---------- Chapter scaffolding + ScrollTriggers ---------- */
 gsap.registerPlugin(ScrollTrigger);
 const host = document.getElementById("bab");
-const HOLD = .6; // extra timeline time at the end where the whole figure stays on screen
+const HOLD = .6;
+const vhUnit = (window.CSS && CSS.supports("height", "100dvh")) ? "dvh" : "vh";
 
 BAB.forEach((b) => {
   const sec = h("section", "bab"); sec.id = b.id;
@@ -663,8 +657,7 @@ BAB.forEach((b) => {
 
   const total = b.beats.length;
   const scrolly = sec.querySelector(".scrolly"), stage = sec.querySelector(".stage");
-  // scroll length: one spacer per beat plus a short hold
-  sec.querySelector(".langkah").style.height = `${total * 55 + 30}vh`;
+  sec.querySelector(".langkah").style.height = `${total * 55 + 30}${vhUnit}`;
 
   const plate = sec.querySelector(".plate");
   const pie = b.type === "pie";
@@ -672,7 +665,7 @@ BAB.forEach((b) => {
   const tl = pie ? pieTimeline(fig) : flowTimeline(fig);
   const focus = pie ? focusPie : focusFlow;
   const dur = total + HOLD;
-  tl.to({}, { duration: dur - tl.duration() > 0 ? dur - tl.duration() : 0 }); // pad to full length
+  tl.to({}, { duration: dur - tl.duration() > 0 ? dur - tl.duration() : 0 });
 
   const hit = sec.querySelector(".hit"), text = sec.querySelector(".narasi p"), bar = sec.querySelector(".kemajuan i");
   let cur = -2;
@@ -687,7 +680,6 @@ BAB.forEach((b) => {
   };
   show(-1);
 
-  // The stage is sticky; the timeline is scrubbed while it is stuck.
   const stuckTop = () => parseFloat(getComputedStyle(stage).top) || 0;
   ScrollTrigger.create({
     trigger: scrolly,
@@ -703,7 +695,7 @@ BAB.forEach((b) => {
   });
 });
 
-// Darken the illustration once the reader leaves the hero, so the plates read cleanly.
+// Darken background illustration on hero exit
 gsap.to(".tirai", {
   opacity: .78, ease: "none",
   scrollTrigger: { trigger: ".hero", start: "bottom 85%", end: "bottom 15%", scrub: true },
@@ -714,3 +706,4 @@ document.fonts && document.fonts.ready.then(() => ScrollTrigger.refresh());
 </script>
 </body>
 </html>
+
