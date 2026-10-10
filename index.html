@@ -1,0 +1,716 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dehidrasi Berat &amp; Syok Hipovolemik</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: kidney illustration fixed full-bleed behind everything. Hero text sits left over a maroon veil.
+   Each chapter is a scrollytelling block: a sticky paper "plate" holds the figure, narration sits under it,
+   and empty spacer steps drive the figure through its beats with GSAP ScrollTrigger. */
+:root {
+  --ground: #2A0A0E;
+  --veil: 42, 10, 14;
+  --ink: #F3E7DD;          /* bone, text on maroon */
+  --ink-2: #D2B7AB;
+  --line: rgba(243, 231, 221, 0.18);
+  --amber: #E3BE6A;        /* urine amber from the ureters, accent on maroon */
+  /* plate (printed figure) */
+  --paper: #F2EEE4;
+  --p-ink: #1B2126;
+  --p-ink-2: #3A4249;
+  --p-muted: #6F695E;
+  --oxblood: #A3302A;      /* accent inside plates only */
+  --serif: "Newsreader", "Iowan Old Style", Georgia, serif;
+  --sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: dark;
+}
+html { scroll-behavior: auto; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+html, body { min-height: 100%; }
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 1rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+
+/* Background */
+.latar { position: fixed; inset: 0; z-index: 0; background: url("latar-ginjal.jpg") 72% center / cover no-repeat, var(--ground); }
+.latar::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(90deg, rgba(var(--veil), .94) 0%, rgba(var(--veil), .82) 34%, rgba(var(--veil), .25) 58%, rgba(var(--veil), 0) 72%);
+}
+.tirai { position: fixed; inset: 0; z-index: 0; background: rgb(var(--veil)); opacity: 0; pointer-events: none; }
+
+.wrap { position: relative; z-index: 1; padding-inline: clamp(16px, 5vw, 80px); max-width: 1400px; margin: 0 auto; }
+
+/* Hero */
+.hero { padding-block: clamp(40px, 9vh, 96px) 64px; }
+.kolom { max-width: 34rem; display: grid; gap: 2.25rem; }
+.kepala { display: grid; gap: 1.2rem; }
+.alis { font-size: .8rem; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); }
+.alis b { color: var(--amber); font-weight: 600; }
+h1, h2 { font-family: var(--serif); font-weight: 500; letter-spacing: -.02em; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2.6rem, 6.2vw, 4.8rem); line-height: 1.04; padding-bottom: .05em; }
+h1 em, h2 em { font-style: italic; font-weight: 400; color: var(--amber); }
+.lead { margin: 0; font-family: var(--serif); font-style: italic; font-size: clamp(1.15rem, 1.8vw, 1.4rem); line-height: 1.45; color: var(--ink-2); max-width: 28rem; }
+.tombol {
+  justify-self: start; display: inline-flex; align-items: center; gap: .6rem;
+  padding: .75rem 1.25rem; border: 1px solid var(--amber); border-radius: 2px;
+  color: var(--ground); background: var(--amber); font-weight: 600; text-decoration: none; white-space: nowrap;
+  transition: transform .2s cubic-bezier(.16,1,.3,1), background-color .2s;
+}
+.tombol:hover { background: #EBCB82; }
+.tombol:active { transform: translateY(1px); }
+.isi { border-top: 1px solid var(--line); }
+.isi ol { list-style: none; margin: 0; padding: 0; }
+.isi a {
+  display: grid; grid-template-columns: 2rem 1fr; align-items: baseline; gap: .75rem;
+  padding-block: .8rem; border-bottom: 1px solid var(--line); text-decoration: none;
+  transition: color .2s, padding-left .25s cubic-bezier(.16,1,.3,1);
+}
+.isi a:hover { color: var(--amber); padding-left: .35rem; }
+.isi .no { font-family: var(--serif); font-style: italic; font-size: 1.1rem; color: var(--amber); font-variant-numeric: tabular-nums; }
+.isi .judul { font-weight: 500; min-width: 0; }
+
+/* Video */
+.video { padding-block: 12vh 4vh; display: grid; gap: 1.25rem; justify-items: start; }
+.video h2 { font-size: clamp(2rem, 4vw, 3rem); }
+.video p { margin: 0; color: var(--ink-2); max-width: 40rem; }
+.video video { width: 100%; max-width: 1100px; aspect-ratio: 16 / 9; height: auto; background: #140405; border-radius: 6px; box-shadow: 0 30px 80px rgba(10, 2, 4, .55); }
+
+/* Chapters */
+.bab-kepala { padding-block: 7vh 1.5vh; display: grid; gap: .9rem; max-width: 44rem; }
+.bab-kepala h2 { font-size: clamp(2rem, 4.4vw, 3.4rem); line-height: 1.06; }
+.bab-kepala p { margin: 0; color: var(--ink-2); font-size: 1.08rem; max-width: 38rem; }
+.scrolly { position: relative; }
+.stage {
+  position: sticky; top: clamp(8px, 3vh, 32px);
+  display: flex; flex-direction: column; gap: clamp(10px, 2vh, 22px);
+  padding-block: clamp(10px, 3vh, 28px);
+}
+.plate {
+  margin: 0; background: var(--paper); color: var(--p-ink); border-radius: 6px;
+  padding: clamp(12px, 2vw, 26px) clamp(12px, 2vw, 26px) clamp(10px, 1.4vw, 16px);
+  box-shadow: 0 30px 80px rgba(10, 2, 4, .5);
+  display: grid; gap: .6rem; min-width: 0;
+}
+.plate figcaption { font-size: .82rem; color: var(--p-muted); line-height: 1.4; }
+.plate figcaption b { color: var(--p-ink); font-weight: 600; }
+.dg-scroll { overflow-x: auto; overflow-y: hidden; scrollbar-width: thin; padding-top: 30px; margin-top: -30px; }
+.dg-sizer { position: relative; margin-inline: auto; }
+.dg-inner { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+.dg-svg { position: absolute; left: 0; top: 0; overflow: visible; }
+
+.n { position: absolute; }
+.box {
+  position: absolute; inset: 0; box-sizing: border-box;
+  display: flex; align-items: center; justify-content: center; text-align: center;
+  padding: 10px 22px; background: var(--fill, #F8F5EE);
+  border: 1.75px solid var(--p-ink-2); border-radius: 4px;
+  font: 500 var(--fs, 26px)/1.24 var(--sans); color: var(--p-ink);
+  transition: opacity .35s, filter .35s, border-color .25s, box-shadow .25s;
+}
+.box.dashed { border-style: dashed; }
+.box.group { align-items: flex-start; padding: 14px 20px; }
+.box.left { justify-content: flex-start; text-align: left; }
+.box.diamond { background: none; border: 0; padding: 0; }
+.box.diamond svg { position: absolute; inset: 0; overflow: visible; }
+.box.diamond polygon { fill: var(--fill, #E9D29B); stroke: var(--p-ink-2); stroke-width: 1.75; transition: stroke .25s, stroke-width .25s; }
+.box.diamond .t { position: relative; width: 60%; }
+.box.on { border-color: var(--oxblood); border-width: 3px; box-shadow: inset 7px 0 0 var(--oxblood), 0 10px 26px rgba(80, 20, 14, .14); }
+.box.diamond.on { box-shadow: none; }
+.box.diamond.on polygon { stroke: var(--oxblood); stroke-width: 3; }
+.fokus .box:not(.on) { opacity: .42; filter: saturate(.35); }
+.badge {
+  position: absolute; left: -1.75px; top: -27px; height: 26px; padding: 0 9px;
+  background: var(--p-ink); color: var(--paper); font: 500 17px/26px var(--mono); letter-spacing: .05em;
+}
+.diamond .badge { left: calc(50% - 22px); top: -34px; }
+.on .badge { background: var(--oxblood); }
+.arr { color: var(--oxblood); font-weight: 700; margin-right: .25em; }
+.lines { display: grid; gap: 10px; }
+.bullets { display: grid; gap: 8px; }
+.bullets div { display: grid; grid-template-columns: 8px 1fr; gap: 12px; }
+.bullets div::before { content: ""; width: 8px; height: 8px; margin-top: .5em; background: var(--oxblood); }
+
+.e path { fill: none; stroke: var(--p-ink-2); stroke-width: 2; stroke-linejoin: miter; transition: stroke .25s, opacity .35s; }
+.e polygon { fill: var(--p-ink-2); transition: fill .25s; }
+.e text { font: 500 20px var(--mono); letter-spacing: .12em; fill: var(--p-ink-2); }
+.e.on path { stroke: var(--oxblood); stroke-width: 2.75; }
+.e.on polygon { fill: var(--oxblood); }
+.fokus .e:not(.on) { opacity: .42; }
+.chevron { fill: #E8E2D5; stroke: var(--p-ink-2); stroke-width: 1.5; transition: fill .25s, opacity .35s; }
+.chevron.on { fill: #F3DED8; }
+.fokus .chevron:not(.on) { opacity: .42; }
+
+/* Pie plate */
+.pie-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: clamp(12px, 3vw, 40px); align-items: center; }
+.pie-svg { width: 100%; height: auto; max-height: 56vh; display: block; }
+.pie-svg text { font-family: var(--sans); }
+.angka { display: grid; }
+.angka > div { display: grid; grid-template-columns: minmax(7rem, auto) 1fr; gap: 1.25rem; align-items: baseline; padding-block: .9rem; border-top: 1.5px solid #CDC4B1; transition: opacity .35s, border-color .25s; }
+.angka strong { font: 500 clamp(2rem, 4.2vw, 3.6rem)/1 var(--serif); letter-spacing: -.03em; white-space: nowrap; transition: color .25s; }
+.angka strong.kecil { font-size: clamp(1.4rem, 2.4vw, 2.1rem); }
+.angka span { font-size: .95rem; color: var(--p-ink-2); }
+.angka .on { border-color: var(--p-ink); }
+.angka .on strong { color: var(--oxblood); }
+.angka .redup { opacity: .45; }
+
+/* Narration under the plate */
+.narasi { display: grid; grid-template-columns: 4.5rem 1fr; gap: 1rem; align-items: start; max-width: 64rem; }
+.narasi .hit { font: 500 .85rem/2.1 var(--mono); color: var(--amber); letter-spacing: .06em; font-variant-numeric: tabular-nums; }
+.narasi p { margin: 0; font-family: var(--serif); font-size: clamp(1.1rem, 1.7vw, 1.45rem); line-height: 1.38; min-height: 4.2em; }
+.kemajuan { height: 2px; background: var(--line); }
+.kemajuan i { display: block; height: 100%; background: var(--amber); transform: scaleX(0); transform-origin: left; }
+
+/* Summary */
+.ringkas { padding-block: 8vh 6vh; display: grid; gap: 2.5rem; max-width: 60rem; }
+.ringkas h2 { font-size: clamp(2.4rem, 5vw, 3.8rem); }
+.ringkas ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.6rem; }
+.ringkas li { font-family: var(--serif); font-size: clamp(1.3rem, 2.4vw, 1.9rem); line-height: 1.3; padding-left: 1.4rem; border-left: 2px solid var(--amber); max-width: 46rem; }
+.kaki { color: var(--ink-2); padding-block: 2.5rem 4rem; border-top: 1px solid var(--line); display: grid; gap: 1rem; }
+.kaki h2 { font-size: clamp(1.8rem, 3.4vw, 2.6rem); color: var(--ink); }
+.kaki p { margin: 0; max-width: 46rem; }
+.pustaka { margin: 0; padding-left: 2.2rem; max-width: 56rem; display: grid; gap: .7rem; font-size: .9rem; line-height: 1.55; }
+.pustaka li { padding-left: .35rem; overflow-wrap: anywhere; }
+.pustaka li::marker { color: var(--amber); font-variant-numeric: tabular-nums; }
+.pustaka a { color: var(--ink); text-decoration-color: var(--amber); text-underline-offset: 2px; }
+
+@media (max-width: 760px) {
+  .latar { background-size: auto 50vh, auto; background-position: 78% top, 0 0; }
+  .latar::after { background: linear-gradient(180deg, rgba(var(--veil), 0) 0%, rgba(var(--veil), .35) 28vh, rgba(var(--veil), 1) 50vh, rgba(var(--veil), .96) 100%); }
+  .hero { padding-block: 34vh 48px; }
+  .pie-grid { grid-template-columns: 1fr; }
+  .pie-svg { max-height: 38vh; }
+  .angka > div:not(.on) { display: none; }
+  .angka > div { border-top: 0; padding-block: .25rem 0; }
+  .narasi { grid-template-columns: 1fr; gap: .25rem; }
+  .narasi p { min-height: 5.6em; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .kolom > * { animation: naik 700ms cubic-bezier(.16, 1, .3, 1) both; }
+  .kolom > *:nth-child(2) { animation-delay: 120ms; }
+  .kolom > *:nth-child(3) { animation-delay: 220ms; }
+  .kolom > *:nth-child(4) { animation-delay: 300ms; }
+  @keyframes naik { from { opacity: .001; transform: translateY(12px); } }
+}
+</style>
+</head>
+<body>
+
+<div class="latar" aria-hidden="true"></div>
+<div class="tirai" aria-hidden="true"></div>
+
+<main>
+  <section class="wrap hero">
+    <div class="kolom">
+      <header class="kepala">
+        <h1>Dehidrasi Berat <em>&amp;</em> Syok Hipovolemik</h1>
+      </header>
+      <a class="tombol" href="#bab-1">Mulai membaca</a>
+      <nav class="isi" aria-label="Isi">
+        <ol>
+          <li><a href="#bab-1"><span class="no">1</span><span class="judul">Kompartemen cairan tubuh</span></a></li>
+          <li><a href="#bab-2"><span class="no">2</span><span class="judul">Respons haus</span></a></li>
+          <li><a href="#bab-3"><span class="no">3</span><span class="judul">Respons homeostasis</span></a></li>
+          <li><a href="#bab-4"><span class="no">4</span><span class="judul">Dehidrasi berat: Rencana Terapi C WHO</span></a></li>
+          <li><a href="#bab-5"><span class="no">5</span><span class="judul">Syok hipovolemik</span></a></li>
+        </ol>
+      </nav>
+    </div>
+  </section>
+
+  <div id="bab"></div>
+
+  <section class="wrap ringkas" id="ringkasan">
+    <h2>Kesimpulan</h2>
+    <ul>
+      <li>Volume cairan ekstrasel ditentukan oleh natrium dan air yang mengikutinya.</li>
+      <li>Ginjal hanya mempertahankan volume. Cairan yang hilang harus diganti dari luar.</li>
+      <li>Respons pasien, bukan angka dosis semata, yang menentukan cairan berikutnya.</li>
+    </ul>
+  </section>
+  <section class="wrap kaki" id="referensi">
+    <h2>Referensi</h2>
+    <ol class="pustaka">
+      <li>Santoso DIS. Fisiologi keseimbangan cairan tubuh dan elektrolit [unpublished lecture notes]. Modul Ginjal dan Cairan Tubuh. Jakarta: Fakultas Kedokteran Universitas Indonesia; 2026 Oct 7.</li>
+      <li>Betts JG, Young KA, Wise JA, Johnson E, Poe B, Kruse DH, et al. Anatomy and physiology 2e [Internet]. Houston: OpenStax; 2022 Apr 20 [cited 2026 Oct 9]. Available from: <a href="https://openstax.org/books/anatomy-and-physiology-2e/pages/1-introduction">https://openstax.org/books/anatomy-and-physiology-2e/pages/1-introduction</a></li>
+      <li>Hall JE, Hall ME. Guyton and Hall textbook of medical physiology. 14th ed. Philadelphia: Elsevier; 2021.</li>
+      <li>Knepper MA, Kwon TH, Nielsen S. Molecular physiology of water balance. N Engl J Med. 2015 Apr 2;372(14):1349-58. doi:<a href="https://doi.org/10.1056/NEJMra1404726">10.1056/NEJMra1404726</a></li>
+      <li>Yolanda S. Fisiologi sistem perkemihan [unpublished lecture notes]. Modul Ginjal dan Cairan Tubuh. Jakarta: Fakultas Kedokteran Universitas Indonesia; lecture given 2026 Oct 5.</li>
+      <li>World Health Organization. Pocket book of hospital care for children: guidelines for the management of common childhood illnesses [Internet]. 2nd ed. Geneva: World Health Organization; 2013. Chapter 5, Diarrhoea [cited 2026 Oct 8]. Available from: <a href="https://www.ncbi.nlm.nih.gov/books/NBK154434/">https://www.ncbi.nlm.nih.gov/books/NBK154434/</a></li>
+      <li>Taghavi S, Nassar AK, Askari R. Hypovolemia and hypovolemic shock. In: StatPearls [Internet]. Treasure Island (FL): StatPearls Publishing; 2025 [updated 2025 Jun 1; cited 2026 Oct 8]. Available from: <a href="https://www.ncbi.nlm.nih.gov/books/NBK513297/">https://www.ncbi.nlm.nih.gov/books/NBK513297/</a></li>
+      <li>World Health Organization. The treatment of diarrhoea: a manual for physicians and other senior health workers [Internet]. 4th rev. Geneva: World Health Organization; 2005 [cited 2026 Oct 8]. Available from: <a href="https://iris.who.int/bitstream/handle/10665/43209/9241593180.pdf">https://iris.who.int/bitstream/handle/10665/43209/9241593180.pdf</a></li>
+      <li>Vincent JL, De Backer D. Circulatory shock. N Engl J Med. 2013 Oct 31;369(18):1726-34. doi:<a href="https://doi.org/10.1056/NEJMra1208943">10.1056/NEJMra1208943</a></li>
+      <li>National Institute for Health and Care Excellence. Intravenous fluid therapy in adults in hospital [Internet]. London: NICE; 2013 Dec 10 [updated 2017 May 5; cited 2026 Oct 8]. Available from: <a href="https://www.nice.org.uk/guidance/cg174">https://www.nice.org.uk/guidance/cg174</a></li>
+      <li>Cannon JW. Hemorrhagic shock. N Engl J Med. 2018 Jan 25;378(4):370-9. doi:<a href="https://doi.org/10.1056/NEJMra1705649">10.1056/NEJMra1705649</a></li>
+      <li>Rossaint R, Afshari A, Bouillon B, Cerny V, Cimpoesu D, Curry N, et al. The European guideline on management of major bleeding and coagulopathy following trauma: sixth edition. Crit Care. 2023 Mar 1;27(1):80. doi:<a href="https://doi.org/10.1186/s13054-023-04327-7">10.1186/s13054-023-04327-7</a></li>
+      <li>CRASH-2 trial collaborators; Shakur H, Roberts I, Bautista R, Caballero J, Coats T, Dewan Y, et al. Effects of tranexamic acid on death, vascular occlusive events, and blood transfusion in trauma patients with significant haemorrhage (CRASH-2): a randomised, placebo-controlled trial. Lancet. 2010 Jul 3;376(9734):23-32. doi:<a href="https://doi.org/10.1016/S0140-6736(10)60835-5">10.1016/S0140-6736(10)60835-5</a></li>
+      <li>Finfer S, Bellomo R, Boyce N, French J, Myburgh J, Norton R; SAFE Study Investigators. A comparison of albumin and saline for fluid resuscitation in the intensive care unit. N Engl J Med. 2004 May 27;350(22):2247-56. doi:<a href="https://doi.org/10.1056/NEJMoa040232">10.1056/NEJMoa040232</a></li>
+      <li>Semler MW, Self WH, Wanderer JP, Ehrenfeld JM, Wang L, Byrne DW, et al. Balanced crystalloids versus saline in critically ill adults. N Engl J Med. 2018 Mar 1;378(9):829-39. doi:<a href="https://doi.org/10.1056/NEJMoa1711584">10.1056/NEJMoa1711584</a></li>
+      <li>Myburgh JA, Mythen MG. Resuscitation fluids. N Engl J Med. 2013 Sep 26;369(13):1243-51. doi:<a href="https://doi.org/10.1056/NEJMra1208627">10.1056/NEJMra1208627</a></li>
+      <li>Djumaryo DH, Solin SC, Bahasoan Y. Patologi klinik 2: elektrolit dan analisis gas darah [unpublished lecture notes]. Modul Ginjal dan Cairan Tubuh. Jakarta: Fakultas Kedokteran Universitas Indonesia; lecture given 2027 Oct 7.</li>
+    </ol>
+  </section>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+(() => {
+"use strict";
+const RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const D = RM ? 0 : 1; // duration multiplier
+const SVGNS = "http://www.w3.org/2000/svg";
+const h = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
+const s = (tag, attrs) => { const e = document.createElementNS(SVGNS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); return e; };
+const esc = (t) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+// "↑ Teks" / "↓ Teks" -> colored arrow
+const fmt = (t) => esc(t).replace(/^([↑↓]) ?/, '<span class="arr">$1</span>');
+
+/* ---------- Content (ported from the Remotion v2 scenes) ---------- */
+const SAND = "#EADFCB", SAGE = "#DDE6D3", BLUE = "#DCE6EC", BLUEMID = "#C8D8E4", ROSE = "#EFD8D1", NEUTRAL = "#E8E2D5", CARD = "#F8F5EE";
+
+const BAB = [
+  {
+    id: "bab-1", type: "pie",
+    title: "Kompartemen <em>cairan</em> tubuh",
+    intro: "Volume yang hilang paling cepat diganti dengan cairan isotonik bernatrium. Alasannya ada pada cara air tubuh terbagi.",
+    caption: "<b>Gambar 1.</b> Proporsi cairan tubuh pada tiap kompartemen. Dimodifikasi dari sumber 2.",
+    beats: [
+      "Air tubuh terbagi dua: cairan intrasel sekitar 2/3 dan cairan ekstrasel sekitar 1/3.",
+      "Cairan ekstrasel terdiri dari cairan interstisial, plasma, dan sedikit cairan transeluler.",
+      "Hanya sekitar 20% cairan ekstrasel yang berada di dalam plasma.",
+      "Natrium menyumbang 90% aktivitas osmotik cairan ekstrasel, jadi volumenya ditentukan oleh garam dan air yang mengikutinya.",
+      "Karena itu, volume yang hilang paling cepat diganti dengan cairan isotonik yang mengandung natrium.",
+    ],
+  },
+  {
+    id: "bab-2", title: "Respons <em>haus</em>", w: 1760, h: 650,
+    intro: "Perdarahan menurunkan volume tanpa mengubah osmolaritas. Diare dan keringat berlebih membuang lebih banyak air, sehingga osmolaritas naik.",
+    caption: "<b>Gambar 2.</b> Respons haus terhadap penurunan volume darah dan kenaikan osmolalitas. Dimodifikasi dari sumber 2.",
+    beats: [
+      "Saat tubuh kekurangan air, muncul dua sinyal sekaligus.",
+      "Volume darah turun, tekanan darah ikut turun, dan kadar angiotensin II meningkat.",
+      "Osmolalitas darah naik. Osmoreseptor di hipotalamus mendeteksinya, dan mulut terasa kering.",
+      "Ketiga sinyal ini merangsang pusat haus di hipotalamus.",
+      "Rasa haus meningkat, orang minum, dan osmolalitas darah kembali turun.",
+    ],
+    nodes: [
+      { x: 0, y: 285, w: 230, h: 110, step: 0, fill: SAND, t: "Kekurangan air tubuh" },
+      { x: 290, y: 30, w: 250, h: 110, step: 0, o: 1, focus: [0, 1], fill: SAND, t: "↓ Volume darah" },
+      { x: 290, y: 412, w: 250, h: 110, step: 0, o: 2, focus: [0, 2], fill: SAND, t: "↑ Osmolalitas darah" },
+      { x: 600, y: 30, w: 280, h: 110, step: 1, o: 1, fill: SAND, t: "↓ Tekanan darah" },
+      { x: 960, y: 30, w: 300, h: 110, step: 1, o: 2, fill: SAND, t: "↑ Angiotensin II" },
+      { x: 600, y: 285, w: 280, h: 110, step: 2, o: 1, fill: SAND, t: "Osmoreseptor di hipotalamus" },
+      { x: 600, y: 540, w: 280, h: 110, step: 2, o: 2, fill: SAND, t: "Mulut kering" },
+      { x: 960, y: 255, w: 300, h: 170, step: 3, o: 1, fill: SAND, t: "Pusat haus di hipotalamus terstimulasi" },
+      { x: 1340, y: 30, w: 420, h: 110, step: 4, o: 1, fill: SAND, t: "↑ Rasa haus" },
+      { x: 1340, y: 285, w: 420, h: 110, step: 4, o: 2, fill: SAND, t: "Asupan air" },
+      { x: 1340, y: 540, w: 420, h: 110, step: 4, o: 3, fill: SAND, t: "↓ Osmolalitas darah" },
+    ],
+    edges: [
+      { step: 0, o: 1, focus: [0, 1], p: [[230, 340], [260, 340], [260, 85], [290, 85]] },
+      { step: 0, o: 2, focus: [0, 2], p: [[230, 340], [260, 340], [260, 467], [290, 467]] },
+      { step: 1, o: 1, p: [[540, 85], [600, 85]] },
+      { step: 1, o: 2, p: [[880, 85], [960, 85]] },
+      { step: 2, o: 1, p: [[540, 467], [570, 467], [570, 340], [600, 340]] },
+      { step: 2, o: 2, p: [[540, 467], [570, 467], [570, 595], [600, 595]] },
+      { step: 3, p: [[1110, 140], [1110, 255]] },
+      { step: 3, p: [[880, 340], [960, 340]] },
+      { step: 3, p: [[880, 595], [920, 595], [920, 395], [960, 395]] },
+      { step: 4, p: [[1260, 340], [1300, 340], [1300, 85], [1340, 85]] },
+      { step: 4, o: 2, p: [[1550, 140], [1550, 285]] },
+      { step: 4, o: 3, p: [[1550, 395], [1550, 540]] },
+    ],
+  },
+  {
+    id: "bab-3", title: "Respons <em>homeostasis</em>", w: 1760, h: 680,
+    intro: "Tubuh mempertahankan tekanan darah lewat jalur endokrin dan jalur saraf. Kompensasi ini nyata, tetapi terbatas.",
+    caption: "<b>Gambar 3.</b> Respons homeostasis terhadap kehilangan volume darah. Dimodifikasi dari sumber 2.",
+    beats: [
+      "Saat tekanan dan volume darah turun, tubuh merespons lewat dua jalur.",
+      "Jalur endokrin melepas ADH, angiotensin II, aldosteron, dan EPO untuk menaikkan volume darah.",
+      "Jalur saraf mengaktifkan baroreseptor, kemoreseptor, pusat kardiovaskular, dan sistem simpatis.",
+      "Hasilnya: curah jantung naik, pembuluh perifer menyempit, tekanan darah naik, cadangan vena berkurang.",
+      "Tapi kompensasi ini terbatas. Ginjal hanya mempertahankan volume, tidak bisa mengganti yang hilang, jadi cairan harus diberikan dari luar.",
+    ],
+    nodes: [
+      { x: 0, y: 250, w: 220, h: 150, step: 0, fill: SAGE, t: "↓ Tekanan dan volume darah" },
+      { x: 290, y: 40, w: 230, h: 100, step: 1, t: "Mekanisme endokrin" },
+      { x: 590, y: 25, w: 320, h: 130, step: 1, o: 1, fs: 26, t: "Pelepasan ADH, angiotensin II, aldosteron, EPO" },
+      { x: 980, y: 40, w: 220, h: 100, step: 1, o: 2, t: "↑ Volume darah" },
+      { x: 290, y: 425, w: 230, h: 100, step: 2, t: "Mekanisme saraf" },
+      { x: 590, y: 285, w: 320, h: 100, step: 2, o: 1, fs: 25, t: "Baroreseptor dan kemoreseptor terstimulasi" },
+      { x: 590, y: 415, w: 320, h: 100, step: 2, o: 2, fs: 25, t: "Pusat kardiovaskular terstimulasi" },
+      { x: 590, y: 545, w: 320, h: 135, step: 2, o: 3, fs: 24, t: "Aktivasi simpatis umum, pelepasan norepinefrin dan epinefrin" },
+      { x: 1050, y: 330, w: 330, h: 250, step: 3, o: 1, fs: 27, left: true, lines: ["↑ Curah jantung", "Vasokonstriksi perifer", "↑ Tekanan darah", "↓ Cadangan vena"] },
+      { x: 1480, y: 60, w: 280, h: 560, step: 3, o: 3, focus: [3, 4], fs: 34, fill: SAGE, t: "Homeostasis pulih" },
+      { x: 0, y: 565, w: 540, h: 115, step: 4, o: 1, dashed: true, fill: ROSE, fs: 25, t: "Kompensasi terbatas: cairan yang hilang harus diganti dari luar" },
+    ],
+    edges: [
+      { step: 1, p: [[220, 290], [290, 90]] },
+      { step: 1, o: 1, p: [[520, 90], [590, 90]] },
+      { step: 1, o: 2, p: [[910, 90], [980, 90]] },
+      { step: 2, p: [[220, 360], [290, 475]] },
+      { step: 2, o: 1, p: [[520, 475], [590, 335]] },
+      { step: 2, o: 2, p: [[520, 475], [590, 465]] },
+      { step: 2, o: 3, p: [[520, 475], [590, 612]] },
+      { step: 3, chevron: "935,285 985,285 1020,482 985,680 935,680 970,482" },
+      { step: 3, o: 3, p: [[1200, 90], [1480, 230]] },
+      { step: 3, o: 3, p: [[1380, 455], [1480, 410]] },
+    ],
+  },
+  {
+    id: "bab-4", title: "Dehidrasi berat: <em>Rencana Terapi C</em>", w: 1760, h: 600,
+    intro: "WHO menyebut langkah ini Rencana Terapi C, yaitu rehidrasi intravena cepat dengan Ringer laktat.",
+    caption: "<b>Gambar 4.</b> Alur tata laksana awal dehidrasi berat (Rencana Terapi C WHO).",
+    beats: [
+      "Langkah 1: pasang akses intravena segera dan mulai Ringer laktat. Jangan memakai glukosa 5% saja.",
+      "Bila akses IV tidak ada, beri oralit lewat NGT atau per oral 20 mL/kgBB/jam selama 6 jam (total 120 mL/kgBB).",
+      "Langkah 2: total 100 mL/kgBB dalam dua tahap. Tahap pertama 30 mL/kgBB, lalu 70 mL/kgBB. Bayi diberikan lebih lambat daripada anak besar dan dewasa.",
+      "Langkah 3: bila nadi radialis masih sangat lemah atau tidak teraba, ulangi tahap 30 mL/kgBB.",
+      "Langkah 4: nilai ulang tiap 15-30 menit sampai nadi radialis kuat, lalu minimal tiap jam.",
+      "Langkah 5: begitu pasien bisa minum, tambahkan oralit sekitar 5 mL/kgBB/jam.",
+      "Langkah 6: setelah semua cairan masuk, nilai ulang derajat dehidrasi untuk menentukan terapi lanjutan.",
+    ],
+    nodes: [
+      { x: 0, y: 20, w: 330, h: 150, step: 0, badge: "01", fill: BLUE, fs: 26, t: "Pasang akses IV, mulai Ringer laktat (bukan glukosa 5% saja)" },
+      { x: 0, y: 210, w: 330, h: 165, step: 1, dashed: true, fill: NEUTRAL, fs: 23, t: "Akses IV tidak ada: oralit via NGT/oral 20 mL/kgBB/jam selama 6 jam (total 120 mL/kgBB)" },
+      { x: 400, y: 20, w: 520, h: 330, step: 2, group: true, badge: "02", fill: CARD, fs: 26, wt: 600, t: "Total 100 mL/kgBB, dua tahap" },
+      { x: 420, y: 85, w: 480, h: 120, step: 2, o: 1, fill: BLUE, fs: 23, t: "Bayi < 12 bulan: 30 mL/kgBB dalam 1 jam, lalu 70 mL/kgBB dalam 5 jam" },
+      { x: 420, y: 215, w: 480, h: 120, step: 2, o: 2, fill: BLUE, fs: 23, t: "Anak besar dan dewasa: 30 mL/kgBB dalam 30 menit, lalu 70 mL/kgBB dalam 2,5 jam" },
+      { x: 1000, y: 30, w: 300, h: 300, step: 3, diamond: true, badge: "03", fs: 24, t: "Nadi radialis sangat lemah / tidak teraba?" },
+      { x: 1400, y: 125, w: 360, h: 110, step: 3, o: 2, fill: BLUE, t: "Ulangi 30 mL/kgBB" },
+      { x: 0, y: 440, w: 560, h: 140, step: 4, o: 1, badge: "04", fill: BLUE, t: "Nilai ulang tiap 15-30 menit, lalu minimal tiap jam" },
+      { x: 600, y: 440, w: 560, h: 140, step: 5, o: 1, badge: "05", fill: BLUE, t: "Bisa minum: tambah oralit ±5 mL/kgBB/jam" },
+      { x: 1200, y: 440, w: 560, h: 140, step: 6, o: 1, badge: "06", fill: BLUE, t: "Nilai ulang derajat dehidrasi, lalu tentukan terapi lanjutan" },
+    ],
+    edges: [
+      { step: 1, dashed: true, p: [[165, 170], [165, 210]] },
+      { step: 2, p: [[330, 95], [400, 95]] },
+      { step: 3, p: [[920, 180], [1000, 180]] },
+      { step: 3, o: 1, p: [[1300, 180], [1400, 180]], label: ["YA", 1350, 166] },
+      { step: 3, o: 3, p: [[1580, 125], [1580, 5], [660, 5], [660, 20]] },
+      { step: 4, p: [[1150, 330], [1150, 405], [280, 405], [280, 440]], label: ["TIDAK", 1215, 378] },
+      { step: 5, p: [[560, 510], [600, 510]] },
+      { step: 6, p: [[1160, 510], [1200, 510]] },
+    ],
+  },
+  {
+    id: "bab-5", title: "Syok <em>hipovolemik</em>", w: 1760, h: 670,
+    intro: "Pada syok, defisit volume sudah membuat perfusi jaringan tidak adekuat. Langkah awal dibedakan menurut ada tidaknya perdarahan.",
+    caption: "<b>Gambar 5.</b> Alur tata laksana awal syok hipovolemik.",
+    beats: [
+      "Langkah 1: ventilate, infuse, pump. Amankan napas, beri oksigen, pasang akses vena.",
+      "Langkah 2: hentikan sumber kehilangan, misalnya dengan penekanan langsung pada perdarahan.",
+      "Tanpa perdarahan: bolus kristaloid isotonik hangat 500 mL dalam kurang dari 15 menit; anak 20 mL/kgBB.",
+      "Dengan perdarahan: batasi kristaloid, beri produk darah sejak dini 1:1:1, dan pertahankan sistolik 80-90 mmHg bila tidak ada cedera otak. Pada trauma, beri asam traneksamat.",
+      "Nilai ulang setiap bolus. Target: MAP di atas 65 mmHg, nadi 60-100, SpO₂ ≥ 94%, laktat di bawah 2 mmol/L.",
+      "Bila hipotensi menetap setelah cairan cukup, mulai vasopresor.",
+    ],
+    nodes: [
+      { x: 0, y: 20, w: 430, h: 150, step: 0, badge: "01", fill: NEUTRAL, fs: 25, t: "Ventilate, infuse, pump: amankan napas, beri O₂, pasang akses vena" },
+      { x: 510, y: 45, w: 320, h: 100, step: 1, badge: "02", fill: NEUTRAL, t: "Hentikan sumber kehilangan" },
+      { x: 910, y: 0, w: 260, h: 190, step: 2, diamond: true, badge: "03", focus: [2, 3], fs: 28, t: "Perdarahan?" },
+      { x: 120, y: 265, w: 640, h: 170, step: 2, o: 2, fill: BLUEMID, fs: 26, t: "Kristaloid isotonik hangat: bolus 500 mL < 15 menit (dewasa, s.d. ±30 mL/kgBB); anak 20 mL/kgBB" },
+      { x: 900, y: 240, w: 860, h: 250, step: 3, o: 1, fill: ROSE, fs: 24, left: true, bullets: ["Batasi kristaloid (< 1 L)", "Produk darah dini, plasma : trombosit : SDM = 1:1:1", "Target sistolik 80-90 mmHg (tanpa cedera otak)", "Trauma: asam traneksamat 1 g dalam 10 menit, lalu 1 g dalam 8 jam (mulai ≤ 3 jam)"] },
+      { x: 120, y: 540, w: 1040, h: 130, step: 4, o: 1, badge: "04", fill: NEUTRAL, fs: 26, t: "Nilai ulang tiap bolus. Target: MAP > 65 mmHg, nadi 60-100/menit, SpO₂ ≥ 94%, laktat < 2 mmol/L" },
+      { x: 1240, y: 540, w: 520, h: 130, step: 5, o: 1, badge: "05", fill: NEUTRAL, fs: 26, t: "Hipotensi menetap setelah cairan cukup: mulai vasopresor" },
+    ],
+    edges: [
+      { step: 1, p: [[430, 95], [510, 95]] },
+      { step: 2, p: [[830, 95], [910, 95]] },
+      { step: 2, o: 1, p: [[1040, 190], [1040, 222], [440, 222], [440, 265]], label: ["TIDAK", 760, 208] },
+      { step: 3, p: [[1170, 95], [1330, 95], [1330, 240]], label: ["YA", 1250, 80] },
+      { step: 4, p: [[440, 435], [440, 540]] },
+      { step: 4, p: [[1330, 490], [1330, 515], [900, 515], [900, 540]] },
+      { step: 5, p: [[1160, 605], [1240, 605]] },
+    ],
+  },
+];
+
+/* ---------- Flowchart builder ---------- */
+function buildFlow(b, plate) {
+  const scroll = h("div", "dg-scroll"), sizer = h("div", "dg-sizer"), inner = h("div", "dg-inner");
+  inner.style.width = b.w + "px"; inner.style.height = b.h + "px";
+  const svg = s("svg", { class: "dg-svg", width: b.w, height: b.h, "aria-hidden": "true" });
+  inner.append(svg); sizer.append(inner); scroll.append(sizer);
+
+  const nodes = b.nodes.map((n) => {
+    const el = h("div", "n");
+    Object.assign(el.style, { left: n.x + "px", top: n.y + "px", width: n.w + "px", height: n.h + "px" });
+    const box = h("div", "box" + (n.dashed ? " dashed" : "") + (n.group ? " group" : "") + (n.diamond ? " diamond" : "") + (n.left ? " left" : ""));
+    if (n.fill) box.style.setProperty("--fill", n.fill);
+    if (n.fs) box.style.setProperty("--fs", n.fs + "px");
+    if (n.wt) box.style.fontWeight = n.wt;
+    if (n.diamond) {
+      const d = s("svg", { width: n.w, height: n.h });
+      d.append(s("polygon", { points: `${n.w / 2},0 ${n.w},${n.h / 2} ${n.w / 2},${n.h} 0,${n.h / 2}` }));
+      box.append(d);
+    }
+    let inner;
+    if (n.lines) inner = h("div", "t lines", n.lines.map((l) => `<div>${fmt(l)}</div>`).join(""));
+    else if (n.bullets) inner = h("div", "t bullets", n.bullets.map((l) => `<div>${esc(l)}</div>`).join(""));
+    else inner = h("div", "t", fmt(n.t));
+    box.append(inner);
+    if (n.badge) box.append(h("div", "badge", n.badge));
+    el.append(box);
+    sizer.firstChild.append(el);
+    return { el, box, step: n.step, o: n.o || 0, focus: n.focus || [n.step], cx: n.x + n.w / 2, shown: true };
+  });
+
+  const edges = b.edges.map((e) => {
+    const g = s("g", { class: "e" });
+    if (e.chevron) {
+      const poly = s("polygon", { points: e.chevron, class: "chevron" });
+      svg.append(poly);
+      return { chevron: poly, step: e.step, o: e.o || 0, focus: e.focus || [e.step], shown: true };
+    }
+    const pts = e.p;
+    let len = 0;
+    for (let i = 1; i < pts.length; i++) len += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]);
+    const path = s("path", { d: pts.map((q, i) => (i ? "L" : "M") + q[0] + "," + q[1]).join(" ") });
+    if (e.dashed) path.setAttribute("stroke-dasharray", "7 7");
+    const [x2, y2] = pts[pts.length - 1], [x1, y1] = pts[pts.length - 2];
+    const a = Math.atan2(y2 - y1, x2 - x1), k = 12;
+    const head = s("polygon", { points: [[x2, y2], [x2 - k * Math.cos(a - .38), y2 - k * Math.sin(a - .38)], [x2 - k * Math.cos(a + .38), y2 - k * Math.sin(a + .38)]].map((q) => q.join(",")).join(" ") });
+    g.append(path, head);
+    let label = null;
+    if (e.label) { label = s("text", { x: e.label[1], y: e.label[2], "text-anchor": "middle" }); label.textContent = e.label[0]; g.append(label); }
+    svg.append(g);
+    return { g, path, head, label, len, dashed: !!e.dashed, step: e.step, o: e.o || 0, focus: e.focus || [e.step], shown: true };
+  });
+
+  plate.prepend(scroll);
+  const d = { b, plate, scroll, sizer, inner, nodes, edges, scale: 1 };
+
+  const fit = () => {
+    const W = scroll.clientWidth;
+    const maxH = Math.max(220, window.innerHeight - (innerWidth < 760 ? 330 : 290));
+    let sc = Math.min(W / b.w, maxH / b.h);
+    sc = Math.max(sc, innerWidth < 760 ? 0.5 : 0.42);
+    d.scale = sc;
+    inner.style.transform = `scale(${sc})`;
+    sizer.style.width = b.w * sc + "px"; sizer.style.height = b.h * sc + "px";
+  };
+  fit();
+  new ResizeObserver(fit).observe(scroll);
+  return d;
+}
+
+// Scroll-scrubbed build: beat j occupies timeline time [j, j+1). Scrolling drives the playhead.
+function flowTimeline(d) {
+  const tl = gsap.timeline({ paused: true, defaults: { ease: "power2.out" } });
+  for (const nd of d.nodes) {
+    tl.fromTo(nd.el, { autoAlpha: 0, x: -14 }, { autoAlpha: 1, x: 0, duration: .35 }, nd.step + nd.o * .08);
+  }
+  for (const e of d.edges) {
+    const t = e.step + .1 + e.o * .08;
+    if (e.chevron) { tl.fromTo(e.chevron, { autoAlpha: 0 }, { autoAlpha: 1, duration: .3 }, t); continue; }
+    if (e.dashed) tl.fromTo(e.path, { autoAlpha: 0 }, { autoAlpha: 1, duration: .3 }, t);
+    else tl.fromTo(e.path, { strokeDasharray: e.len, strokeDashoffset: e.len }, { strokeDashoffset: 0, duration: .4, ease: "none" }, t);
+    tl.fromTo([e.head, e.label].filter(Boolean), { autoAlpha: 0 }, { autoAlpha: 1, duration: .1 }, t + .38);
+  }
+  return tl;
+}
+
+// Highlight for the current beat (i === total means "whole figure", nothing highlighted).
+function focusFlow(d, i) {
+  const n = d.b.beats.length, focusOn = i >= 0 && i < n;
+  d.plate.classList.toggle("fokus", focusOn);
+  for (const nd of d.nodes) nd.box.classList.toggle("on", focusOn && nd.focus.includes(i));
+  for (const e of d.edges) (e.chevron || e.g).classList.toggle("on", focusOn && e.focus.includes(i));
+  // On narrow screens the figure scrolls sideways: bring the highlighted part into view.
+  const W = d.scroll.clientWidth, full = d.b.w * d.scale;
+  if (full > W + 4) {
+    const xs = d.nodes.filter((nd) => focusOn && nd.focus.includes(i)).map((nd) => nd.cx);
+    const target = xs.length ? (xs.reduce((a, b) => a + b, 0) / xs.length) * d.scale - W / 2 : 0;
+    d.scroll.scrollTo({ left: Math.max(0, target), behavior: RM ? "auto" : "smooth" });
+  }
+}
+
+/* ---------- Pie (chapter 1) ---------- */
+function buildPie(b, plate) {
+  const CX = 470, CY = 318, R = 262;
+  const rad = (a) => a * Math.PI / 180;
+  const pt = (a, r) => [CX + r * Math.cos(rad(a)), CY + r * Math.sin(rad(a))];
+  const wedge = (a0, a1, r = R) => { const [x0, y0] = pt(a0, r), [x1, y1] = pt(a1, r); return `M${CX},${CY} L${x0},${y0} A${r},${r} 0 ${a1 - a0 > 180 ? 1 : 0} 1 ${x1},${y1} Z`; };
+  const arc = (a0, a1, r) => { const [x0, y0] = pt(a0, r), [x1, y1] = pt(a1, r); return `M${x0},${y0} A${r},${r} 0 ${a1 - a0 > 180 ? 1 : 0} 1 ${x1},${y1}`; };
+  const ICF = [155, 395], INT = [395, 485], PLA = [485, 510.2], TRA = [510.2, 515];
+  const mid = (PLA[0] + PLA[1]) / 2;
+  const [tx0, ty0] = pt(152, R + 98), [tx1, ty1] = pt(38, R + 98);
+  const lInt = pt(440, R * .58), lPla = pt(mid, R * .7), lTr = pt(512.6, R * .9);
+
+  // deterministic sodium particle positions
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const na = Array.from({ length: 14 }, (_, i) => {
+    const a = INT[0] + 8 + rnd() * (PLA[1] - INT[0] - 16);
+    const r = R * (i % 2 ? .2 + rnd() * .16 : .84 + rnd() * .1);
+    return pt(a, r);
+  });
+
+  const svgMarkup = `
+  <svg class="pie-svg" viewBox="-10 -14 980 712" role="img" aria-label="Diagram pie proporsi cairan tubuh: intrasel dua pertiga, ekstrasel sepertiga yang terdiri dari interstisial, plasma, dan transeluler.">
+    <defs>
+      <marker id="ah" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1B2126"/></marker>
+      <path id="ecfText" d="M${tx0},${ty0} A${R + 98},${R + 98} 0 0 0 ${tx1},${ty1}"/>
+    </defs>
+    <path data-k="icf" d="${wedge(...ICF)}" fill="#E7CCAE" stroke="#3A4249" stroke-width="2"/>
+    <path data-k="ecf" d="${wedge(INT[0], TRA[1])}" fill="#CFCAC0" stroke="#3A4249" stroke-width="2"/>
+    <g data-k="split">
+      <path data-k="int" d="${wedge(...INT)}" fill="#C6D8E5" stroke="#3A4249" stroke-width="2"/>
+      <path data-k="tra" d="${wedge(...TRA)}" fill="#B9D1AE" stroke="#3A4249" stroke-width="2"/>
+      <path data-k="pla" d="${wedge(...PLA)}" fill="#C2554E" stroke="#3A4249" stroke-width="2"/>
+    </g>
+    <path data-k="ring" d="${wedge(INT[0], TRA[1], R + 10)}" fill="none" stroke="#A3302A" stroke-width="2.5" stroke-dasharray="2 6" stroke-linecap="round"/>
+    <g data-k="na">${na.map(([x, y]) => `<g><circle cx="${x}" cy="${y}" r="17" fill="#F2EEE4" stroke="#A3302A" stroke-width="1.5"/><text x="${x}" y="${y + 5}" text-anchor="middle" font-size="14" font-family="IBM Plex Mono, monospace" fill="#A3302A">Na+</text></g>`).join("")}</g>
+    <path data-k="arc" d="${arc(39, 151, R + 40)}" fill="none" stroke="#1B2126" stroke-width="2" pathLength="1" stroke-dasharray="1" marker-start="url(#ah)" marker-end="url(#ah)"/>
+    <text data-k="arcLabel" font-family="Newsreader, Georgia, serif" font-style="italic" font-size="34" fill="#1B2126"><textPath href="#ecfText" startOffset="50%" text-anchor="middle">Cairan ekstrasel (1/3)</textPath></text>
+    <g data-k="lIcf" text-anchor="middle" fill="#1B2126">
+      <text x="${CX + 10}" y="${CY - 140}" font-size="36" font-weight="600">Cairan intrasel</text>
+      <text x="${CX + 10}" y="${CY - 96}" font-size="30" font-family="IBM Plex Mono, monospace" fill="#3A4249">2/3</text>
+    </g>
+    <g data-k="lSplit" fill="#1B2126" text-anchor="middle">
+      <g data-k="lInt"><text x="${lInt[0]}" y="${lInt[1] - 6}" font-size="30" font-weight="600">Cairan</text><text x="${lInt[0]}" y="${lInt[1] + 30}" font-size="30" font-weight="600">interstisial</text></g>
+      <text data-k="lPla" x="${lPla[0]}" y="${lPla[1] + 10}" font-size="28" font-weight="700">Plasma</text>
+      <g data-k="lTra"><line x1="${lTr[0]}" y1="${lTr[1]}" x2="${CX - 318}" y2="${CY + 92}" stroke="#3A4249" stroke-width="1.25"/><text x="${CX - 385}" y="${CY + 100}" font-size="25" font-weight="500">Cairan</text><text x="${CX - 385}" y="${CY + 132}" font-size="25" font-weight="500">transeluler</text></g>
+    </g>
+  </svg>`;
+  const grid = h("div", "pie-grid", svgMarkup);
+  const angka = h("div", "angka", `
+    <div data-step="0"><strong>2 : 1</strong><span>Perbandingan cairan intrasel dan ekstrasel dalam air tubuh total</span></div>
+    <div data-step="2"><strong>≈ 20%</strong><span>cairan ekstrasel berada di dalam plasma</span></div>
+    <div data-step="3"><strong>90%</strong><span>aktivitas osmotik cairan ekstrasel berasal dari natrium</span></div>
+    <div data-step="4"><strong class="kecil">RL / NaCl 0,9%</strong><span>kristaloid isotonik bernatrium</span></div>`);
+  grid.append(angka);
+  plate.prepend(grid);
+  const q = (k) => grid.querySelector(`[data-k="${k}"]`);
+  const el = { icf: q("icf"), ecf: q("ecf"), split: q("split"), int: q("int"), tra: q("tra"), pla: q("pla"), ring: q("ring"), na: q("na"), arc: q("arc"), arcLabel: q("arcLabel"), lIcf: q("lIcf"), lSplit: q("lSplit"), lInt: q("lInt"), lPla: q("lPla"), lTra: q("lTra") };
+  return { b, plate, el, rows: [...angka.children], origin: `${CX} ${CY}`, pop: [36 * Math.cos(rad(mid)), 36 * Math.sin(rad(mid))] };
+}
+
+function pieTimeline(p) {
+  const e = p.el, O = p.origin, n = p.b.beats.length;
+  const tl = gsap.timeline({ paused: true, defaults: { ease: "power2.out" } });
+  const row = (k) => p.rows[k];
+  // beat 0: ICF/ECF split 2:1
+  tl.fromTo([e.icf, e.ecf], { autoAlpha: 0, scale: .82, svgOrigin: O }, { autoAlpha: 1, scale: 1, svgOrigin: O, duration: .4, stagger: .12 }, 0)
+    .fromTo(e.arc, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: .45, ease: "none" }, .2)
+    .fromTo([e.arcLabel, e.lIcf], { autoAlpha: 0 }, { autoAlpha: 1, duration: .25 }, .5)
+    .fromTo(row(0), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .3 }, .35)
+  // beat 1: ECF splits into three
+    .to(e.ecf, { autoAlpha: 0, duration: .3 }, 1)
+    .fromTo(e.split, { autoAlpha: 0 }, { autoAlpha: 1, duration: .3 }, 1)
+    .fromTo(e.lSplit, { autoAlpha: 0 }, { autoAlpha: 1, duration: .3 }, 1.2)
+  // beat 2: plasma pulled out, rest dimmed
+    .to([e.pla, e.lPla], { x: p.pop[0], y: p.pop[1], duration: .4 }, 2)
+    .to([e.icf, e.int, e.tra, e.lInt, e.lTra], { autoAlpha: .45, duration: .3 }, 2)
+    .fromTo(row(1), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .3 }, 2.1)
+  // beat 3: sodium in the extracellular space
+    .to([e.pla, e.lPla], { x: 0, y: 0, duration: .35 }, 3)
+    .to([e.int, e.tra, e.lInt, e.lTra], { autoAlpha: 1, duration: .3 }, 3)
+    .fromTo(e.ring, { autoAlpha: 0 }, { autoAlpha: 1, duration: .3 }, 3)
+    .fromTo(e.na.children, { autoAlpha: 0, scale: .4, transformOrigin: "50% 50%" }, { autoAlpha: 1, scale: 1, transformOrigin: "50% 50%", duration: .3, stagger: .03, ease: "back.out(2)" }, 3.1)
+    .fromTo(row(2), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .3 }, 3.1)
+  // beat 4: isotonic sodium-containing fluid
+    .to(e.na.children, { autoAlpha: 0, scale: .4, duration: .25, stagger: .01 }, 4)
+    .fromTo(row(3), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .3 }, 4.1)
+  // whole figure
+    .to(e.ring, { autoAlpha: 0, duration: .3 }, n)
+    .to(e.icf, { autoAlpha: 1, duration: .3 }, n);
+  return tl;
+}
+
+function focusPie(p, i) {
+  const n = p.b.beats.length, end = i >= n;
+  p.rows.forEach((r) => {
+    const st = +r.dataset.step;
+    r.classList.toggle("on", !end && st === i);
+    r.classList.toggle("redup", !end && i >= 0 && st !== i);
+  });
+}
+
+/* ---------- Chapter scaffolding + ScrollTriggers ---------- */
+gsap.registerPlugin(ScrollTrigger);
+const host = document.getElementById("bab");
+const HOLD = .6; // extra timeline time at the end where the whole figure stays on screen
+
+BAB.forEach((b) => {
+  const sec = h("section", "bab"); sec.id = b.id;
+  sec.innerHTML = `
+    <header class="wrap bab-kepala"><h2>${b.title}</h2><p>${esc(b.intro)}</p></header>
+    <div class="scrolly">
+      <div class="wrap stage">
+        <figure class="plate"><figcaption>${b.caption}</figcaption></figure>
+        <div class="narasi"><span class="hit" aria-hidden="true"></span><p aria-live="polite"></p></div>
+        <div class="kemajuan" aria-hidden="true"><i></i></div>
+      </div>
+      <div class="langkah" aria-hidden="true"></div>
+    </div>`;
+  host.append(sec);
+
+  const total = b.beats.length;
+  const scrolly = sec.querySelector(".scrolly"), stage = sec.querySelector(".stage");
+  // scroll length: one spacer per beat plus a short hold
+  sec.querySelector(".langkah").style.height = `${total * 55 + 30}vh`;
+
+  const plate = sec.querySelector(".plate");
+  const pie = b.type === "pie";
+  const fig = pie ? buildPie(b, plate) : buildFlow(b, plate);
+  const tl = pie ? pieTimeline(fig) : flowTimeline(fig);
+  const focus = pie ? focusPie : focusFlow;
+  const dur = total + HOLD;
+  tl.to({}, { duration: dur - tl.duration() > 0 ? dur - tl.duration() : 0 }); // pad to full length
+
+  const hit = sec.querySelector(".hit"), text = sec.querySelector(".narasi p"), bar = sec.querySelector(".kemajuan i");
+  let cur = -2;
+  const show = (i) => {
+    if (i === cur) return;
+    cur = i;
+    focus(fig, i);
+    const msg = i < 0 ? b.beats[0] : i < total ? b.beats[i] : "Gambar lengkap. Gulir terus ke bagian berikutnya.";
+    hit.textContent = i < total ? `${String(Math.max(i, 0) + 1).padStart(2, "0")} / ${String(total).padStart(2, "0")}` : "";
+    text.textContent = msg;
+    gsap.fromTo(text, { autoAlpha: 0, y: 6 }, { autoAlpha: i < 0 ? .35 : 1, y: 0, duration: .35 * D, ease: "power2.out", overwrite: "auto" });
+  };
+  show(-1);
+
+  // The stage is sticky; the timeline is scrubbed while it is stuck.
+  const stuckTop = () => parseFloat(getComputedStyle(stage).top) || 0;
+  ScrollTrigger.create({
+    trigger: scrolly,
+    start: () => `top ${stuckTop()}px`,
+    end: () => `bottom ${stuckTop() + stage.offsetHeight}px`,
+    animation: tl,
+    scrub: RM ? true : .5,
+    onUpdate: (self) => {
+      bar.style.transform = `scaleX(${self.progress})`;
+      const t = self.progress * dur;
+      show(self.progress === 0 ? -1 : Math.min(Math.floor(t), total));
+    },
+  });
+});
+
+// Darken the illustration once the reader leaves the hero, so the plates read cleanly.
+gsap.to(".tirai", {
+  opacity: .78, ease: "none",
+  scrollTrigger: { trigger: ".hero", start: "bottom 85%", end: "bottom 15%", scrub: true },
+});
+
+document.fonts && document.fonts.ready.then(() => ScrollTrigger.refresh());
+})();
+</script>
+</body>
+</html>
