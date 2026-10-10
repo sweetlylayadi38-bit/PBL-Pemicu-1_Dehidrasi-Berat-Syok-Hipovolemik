@@ -22,12 +22,14 @@
   --oxblood: #A3302A;
   --serif: "Newsreader", "Iowan Old Style", Georgia, serif;
   --sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --fx: .5s cubic-bezier(.22,1,.36,1);
   --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
   color-scheme: dark;
 }
 
 html { scroll-behavior: auto; }
 @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+@media (prefers-reduced-motion: reduce) { :root { --fx: 0s; } }
 html, body { min-height: 100%; }
 body {
   margin: 0;
@@ -117,16 +119,16 @@ h1 em, h2 em { font-style: italic; font-weight: 400; color: var(--amber); }
   padding: 10px 22px; background: var(--fill, #F8F5EE);
   border: 1.75px solid var(--p-ink-2); border-radius: 4px;
   font: 500 var(--fs, 26px)/1.24 var(--sans); color: var(--p-ink);
-  transition: opacity .3s, border-color .2s, box-shadow .2s;
+  transition: opacity var(--fx), border-color var(--fx), box-shadow var(--fx);
 }
 .box.dashed { border-style: dashed; }
 .box.group { align-items: flex-start; padding: 14px 20px; }
 .box.left { justify-content: flex-start; text-align: left; }
 .box.diamond { background: none; border: 0; padding: 0; }
 .box.diamond svg { position: absolute; inset: 0; overflow: visible; }
-.box.diamond polygon { fill: var(--fill, #E9D29B); stroke: var(--p-ink-2); stroke-width: 1.75; transition: stroke .2s, stroke-width .2s; }
+.box.diamond polygon { fill: var(--fill, #E9D29B); stroke: var(--p-ink-2); stroke-width: 1.75; transition: stroke var(--fx), stroke-width var(--fx); }
 .box.diamond .t { position: relative; width: 60%; }
-.box.on { border-color: var(--oxblood); border-width: 3px; box-shadow: inset 7px 0 0 var(--oxblood); }
+.box.on { border-color: var(--oxblood); box-shadow: inset 7px 0 0 var(--oxblood), 0 0 0 1.25px var(--oxblood); }
 .box.diamond.on { box-shadow: none; }
 .box.diamond.on polygon { stroke: var(--oxblood); stroke-width: 3; }
 
@@ -144,13 +146,14 @@ h1 em, h2 em { font-style: italic; font-weight: 400; color: var(--amber); }
 .bullets div { display: grid; grid-template-columns: 8px 1fr; gap: 12px; }
 .bullets div::before { content: ""; width: 8px; height: 8px; margin-top: .5em; background: var(--oxblood); }
 
-.e path { fill: none; stroke: var(--p-ink-2); stroke-width: 2; stroke-linejoin: miter; transition: stroke .2s, opacity .3s; }
-.e polygon { fill: var(--p-ink-2); transition: fill .2s; }
+.e path { fill: none; stroke: var(--p-ink-2); stroke-width: 2; stroke-linejoin: miter; transition: stroke var(--fx), stroke-width var(--fx); }
+.e { transition: opacity var(--fx); }
+.e polygon { fill: var(--p-ink-2); transition: fill var(--fx); }
 .e text { font: 500 20px var(--mono); letter-spacing: .12em; fill: var(--p-ink-2); }
 .e.on path { stroke: var(--oxblood); stroke-width: 2.75; }
 .e.on polygon { fill: var(--oxblood); }
 .fokus .e:not(.on) { opacity: .28; }
-.chevron { fill: #E8E2D5; stroke: var(--p-ink-2); stroke-width: 1.5; transition: fill .2s, opacity .3s; }
+.chevron { fill: #E8E2D5; stroke: var(--p-ink-2); stroke-width: 1.5; transition: fill var(--fx), opacity var(--fx); }
 .chevron.on { fill: #F3DED8; }
 .fokus .chevron:not(.on) { opacity: .28; }
 
@@ -159,8 +162,8 @@ h1 em, h2 em { font-style: italic; font-weight: 400; color: var(--amber); }
 .pie-svg { width: 100%; height: auto; max-height: 56vh; display: block; }
 .pie-svg text { font-family: var(--sans); }
 .angka { display: grid; }
-.angka > div { display: grid; grid-template-columns: minmax(7rem, auto) 1fr; gap: 1.25rem; align-items: baseline; padding-block: .9rem; border-top: 1.5px solid #CDC4B1; transition: opacity .3s, border-color .2s; }
-.angka strong { font: 500 clamp(2rem, 4.2vw, 3.6rem)/1 var(--serif); letter-spacing: -.03em; white-space: nowrap; transition: color .2s; }
+.angka > div { display: grid; grid-template-columns: minmax(7rem, auto) 1fr; gap: 1.25rem; align-items: baseline; padding-block: .9rem; border-top: 1.5px solid #CDC4B1; transition: opacity var(--fx), border-color var(--fx); }
+.angka strong { font: 500 clamp(2rem, 4.2vw, 3.6rem)/1 var(--serif); letter-spacing: -.03em; white-space: nowrap; transition: color var(--fx); }
 .angka strong.kecil { font-size: clamp(1.4rem, 2.4vw, 2.1rem); }
 .angka span { font-size: .95rem; color: var(--p-ink-2); }
 .angka .on { border-color: var(--p-ink); }
@@ -516,14 +519,14 @@ function buildFlow(b, plate) {
 function flowTimeline(d) {
   const tl = gsap.timeline({ paused: true, defaults: { ease: "power2.out" } });
   for (const nd of d.nodes) {
-    tl.fromTo(nd.el, { autoAlpha: 0, x: -14 }, { autoAlpha: 1, x: 0, duration: .35 }, nd.step + nd.o * .08);
+    tl.fromTo(nd.el, { autoAlpha: 0, x: -14 }, { autoAlpha: 1, x: 0, duration: .55 }, nd.step + nd.o * .1);
   }
   for (const e of d.edges) {
-    const t = e.step + .1 + e.o * .08;
+    const t = e.step + .1 + e.o * .1;
     if (e.chevron) { tl.fromTo(e.chevron, { autoAlpha: 0 }, { autoAlpha: 1, duration: .3 }, t); continue; }
     if (e.dashed) tl.fromTo(e.path, { autoAlpha: 0 }, { autoAlpha: 1, duration: .3 }, t);
-    else tl.fromTo(e.path, { strokeDasharray: e.len, strokeDashoffset: e.len }, { strokeDashoffset: 0, duration: .4, ease: "none" }, t);
-    tl.fromTo([e.head, e.label].filter(Boolean), { autoAlpha: 0 }, { autoAlpha: 1, duration: .1 }, t + .38);
+    else tl.fromTo(e.path, { strokeDasharray: e.len, strokeDashoffset: e.len }, { strokeDashoffset: 0, duration: .45, ease: "power1.inOut" }, t);
+    tl.fromTo([e.head, e.label].filter(Boolean), { autoAlpha: 0 }, { autoAlpha: 1, duration: .2 }, t + .35);
   }
   return tl;
 }
@@ -610,21 +613,21 @@ function pieTimeline(p) {
   tl.fromTo([e.icf, e.ecf], { autoAlpha: 0, scale: .82, svgOrigin: O }, { autoAlpha: 1, scale: 1, svgOrigin: O, duration: .4, stagger: .12 }, 0)
     .fromTo(e.arc, { autoAlpha: 0, strokeDashoffset: 1 }, { autoAlpha: 1, strokeDashoffset: 0, duration: .45, ease: "none" }, .2)
     .fromTo([e.arcLabel, e.lIcf], { autoAlpha: 0 }, { autoAlpha: 1, duration: .25 }, .5)
-    .fromTo(row(0), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .3 }, .35)
+    .fromTo(row(0), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .5 }, .35)
     .to(e.ecf, { autoAlpha: 0, duration: .3 }, 1)
     .fromTo(e.split, { autoAlpha: 0 }, { autoAlpha: 1, duration: .3 }, 1)
     .fromTo(e.lSplit, { autoAlpha: 0 }, { autoAlpha: 1, duration: .3 }, 1.2)
-    .fromTo(row(1), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .3 }, 1.1)
+    .fromTo(row(1), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .5 }, 1.1)
     .to([e.pla, e.lPla], { x: p.pop[0], y: p.pop[1], duration: .4 }, 2)
     .to([e.icf, e.int, e.tra, e.lInt, e.lTra], { autoAlpha: .45, duration: .3 }, 2)
-    .fromTo(row(2), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .3 }, 2.1)
+    .fromTo(row(2), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .5 }, 2.1)
     .to([e.pla, e.lPla], { x: 0, y: 0, duration: .35 }, 3)
     .to([e.int, e.tra, e.lInt, e.lTra], { autoAlpha: 1, duration: .3 }, 3)
     .fromTo(e.ring, { autoAlpha: 0 }, { autoAlpha: 1, duration: .3 }, 3)
     .fromTo(e.na.children, { autoAlpha: 0, scale: .4, transformOrigin: "50% 50%" }, { autoAlpha: 1, scale: 1, transformOrigin: "50% 50%", duration: .3, stagger: .03, ease: "back.out(2)" }, 3.1)
-    .fromTo(row(3), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .3 }, 3.1)
+    .fromTo(row(3), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .5 }, 3.1)
     .to(e.na.children, { autoAlpha: 0, scale: .4, duration: .25, stagger: .01 }, 4)
-    .fromTo(row(4), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .3 }, 4.1)
+    .fromTo(row(4), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .5 }, 4.1)
     .to(e.ring, { autoAlpha: 0, duration: .3 }, n)
     .to(e.icf, { autoAlpha: 1, duration: .3 }, n);
   return tl;
@@ -684,7 +687,7 @@ BAB.forEach((b) => {
     const msg = i < 0 ? b.beats[0] : i < total ? b.beats[i] : "Gambar lengkap. Gulir terus ke bagian berikutnya.";
     hit.textContent = i < total ? `${String(Math.max(i, 0) + 1).padStart(2, "0")} / ${String(total).padStart(2, "0")}` : "";
     text.textContent = msg;
-    gsap.fromTo(text, { autoAlpha: 0, y: 6 }, { autoAlpha: i < 0 ? .35 : 1, y: 0, duration: .25 * D, ease: "power2.out", overwrite: "auto" });
+    gsap.fromTo(text, { autoAlpha: 0, y: 6 }, { autoAlpha: i < 0 ? .35 : 1, y: 0, duration: .45 * D, ease: "power2.out", overwrite: "auto" });
   };
   show(-1);
 
@@ -694,8 +697,7 @@ BAB.forEach((b) => {
     start: () => `top ${stuckTop()}px`,
     end: () => `bottom ${stuckTop() + stage.offsetHeight}px`,
     animation: tl,
-    scrub: RM ? true : .3,
-    fastScrollEnd: true,
+    scrub: RM ? true : .8,
     onUpdate: (self) => {
       setBarScale(self.progress);
       const t = self.progress * dur;
