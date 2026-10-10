@@ -14,6 +14,8 @@ Halaman scrollytelling untuk makalah PBL Pemicu 1: tata laksana awal dehidrasi b
 
 Daftar referensi lengkap ada di bagian bawah halaman.
 
+Mindmap makalah (PDF): https://sweetlylayadi38-bit.github.io/PBL-Pemicu-1_Dehidrasi-Berat-Syok-Hipovolemik/mindmap.pdf
+
 ## Teknis
 
 Satu file `index.html` tanpa build step. Animasi memakai GSAP 3.12.5 + ScrollTrigger (CDN), font dari Google Fonts. Gambar latar: `latar-ginjal.jpg`.
