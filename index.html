@@ -163,12 +163,13 @@ h1 em, h2 em { font-style: italic; font-weight: 400; color: var(--amber); }
 .pie-svg text { font-family: var(--sans); }
 .angka { display: grid; }
 .angka > div { display: grid; grid-template-columns: minmax(7rem, auto) 1fr; gap: 1.25rem; align-items: baseline; padding-block: .9rem; border-top: 1.5px solid #CDC4B1; transition: opacity var(--fx), border-color var(--fx); }
-.angka strong { font: 500 clamp(2rem, 4.2vw, 3.6rem)/1 var(--serif); letter-spacing: -.03em; white-space: nowrap; transition: color var(--fx); }
+.angka strong { font: 500 clamp(2rem, 4.2vw, 3.6rem)/1 var(--serif); letter-spacing: -.03em; white-space: nowrap; }
 .angka strong.kecil { font-size: clamp(1.4rem, 2.4vw, 2.1rem); }
 .angka span { font-size: .95rem; color: var(--p-ink-2); }
 .angka .on { border-color: var(--p-ink); }
 .angka .on strong { color: var(--oxblood); }
-.angka .redup { opacity: .35; }
+.angka > div > * { transition: opacity var(--fx), color var(--fx); }
+.angka .redup > * { opacity: .35; }
 
 /* Narration under the plate */
 .narasi { display: grid; grid-template-columns: 4.5rem 1fr; gap: 1rem; align-items: start; max-width: 64rem; }
